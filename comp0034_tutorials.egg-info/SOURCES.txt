@@ -1,6 +1,15 @@
+.DS_Store
 README.md
 pyproject.toml
+requirements.txt
 comp0034_tutorials.egg-info/PKG-INFO
 comp0034_tutorials.egg-info/SOURCES.txt
 comp0034_tutorials.egg-info/dependency_links.txt
 comp0034_tutorials.egg-info/top_level.txt
+coursework1/.DS_Store
+coursework1/__init__.py
+coursework1/code/__init__.py
+coursework1/code/app.py
+coursework1/code/app_2.py
+coursework1/data/cleaned_grants_data.xlsx
+coursework1/report/report.md
