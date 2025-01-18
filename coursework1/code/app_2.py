@@ -70,13 +70,13 @@ app.layout = dbc.Container([
                     html.Div([
                         dcc.RangeSlider(
                             id='year-slider',
-                            min=df['Award_Date'].astype(int).min(),
-                            max=df['Award_Date'].astype(int).max(),
+                            min=df['Award_Date'].dt.year.min(),
+                            max=df['Award_Date'].dt.year.max(),
                             step=1,
                             marks={str(year): str(year) 
-                                  for year in sorted(df['Award_Date'].astype(int).unique())},
-                            value=[df['Award_Date'].astype(int).min(), 
-                                  df['Award_Date'].astype(int).max()]
+                                  for year in sorted(df['Award_Date'].dt.year.unique())},
+                            value=[df['Award_Date'].dt.year.min(), 
+                                  df['Award_Date'].dt.year.max()]
                         )
                     ], style={'padding': '0 20px'}),
                     dcc.Graph(id='timeline-chart')
@@ -157,19 +157,20 @@ def update_department_chart(selected_departments):
 )
 def update_timeline_chart(years_range):
     filtered_df = df[
-        (df['Award_Date'].astype(int) >= years_range[0]) &
-        (df['Award_Date'].astype(int) <= years_range[1])
+        (df['Award_Date'].dt.year >= years_range[0]) &
+        (df['Award_Date'].dt.year <= years_range[1])
     ]
     
-    yearly_data = filtered_df.groupby('Award_Date')['Amount_awarded'].sum().reset_index()
+    yearly_data = filtered_df.groupby(filtered_df['Award_Date'].dt.year)['Amount_awarded'].sum().reset_index()
+    yearly_data.rename(columns={'Award_Date': 'Year'}, inplace=True)
     
     fig = px.line(
         yearly_data,
-        x='Award_Date',
+        x='Year',
         y='Amount_awarded',
         title='Grants Timeline',
         labels={'Amount_awarded': 'Total Amount Awarded (£)',
-                'Award_Date': 'Year'},
+                'Year': 'Year'},
         template='plotly_white'
     )
     
