@@ -15,3 +15,5 @@ selenium
 pytest-cov
 # Dash testing is covered separately in week 4: dash[testing] or dash\[testing]
 networkx
+wordcloud
+scikit-learn
