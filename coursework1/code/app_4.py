@@ -17,9 +17,8 @@ import itertools
 from sklearn.svm import SVR
 import nltk
 from nltk.sentiment import SentimentIntensityAnalyzer
-
-# Download required NLTK data (only needs to be done once)
-nltk.download('vader_lexicon')
+from sklearn.model_selection import train_test_split
+from sklearn import linear_model, tree, neighbors
 
 # Initialize the Dash app with a modern Bootstrap theme
 meta_tags = [
@@ -93,6 +92,10 @@ department_colors = {
 }
 
 # --- Layout ---
+models = {'Regression': linear_model.LinearRegression,
+          'Decision Tree': tree.DecisionTreeRegressor,
+          'k-NN': neighbors.KNeighborsRegressor}
+
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([
@@ -213,13 +216,20 @@ app.layout = dbc.Container([
         ])
     ], className="mb-4"),
 
-    # --- Sentiment Analysis Graph ---
+    # --- Regression Analysis Graph ---
     dbc.Row([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H3("Sentiment Analysis of Grant Descriptions", className="mb-3 text-primary"),
-                    dcc.Graph(id='sentiment-chart')
+                    html.H3("Regression Analysis", className="mb-3 text-primary"),
+                    html.P("Select model:"),
+                    dcc.Dropdown(
+                        id='dropdown',
+                        options=[{"label":k, "value":k} for k in models.keys()],
+                        value='Decision Tree',
+                        clearable=False
+                    ),
+                    dcc.Graph(id="regression-chart"),
                 ])
             ], className="shadow-sm")
         ])
@@ -253,6 +263,12 @@ def update_department_chart(selected_departments):
         template='plotly_white',
         color='Funding_Org:Department',  # Use department for color mapping
         color_discrete_map=department_colors # Apply the color mapping
+    )
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        paper_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        xaxis_gridcolor='rgba(0,0,0,0)',  # Transparent gridlines
+        yaxis_gridcolor='rgba(0,0,0,0)'   # Transparent gridlines
     )
 
     # Add drill-down interactivity
@@ -318,6 +334,12 @@ def update_timeline_chart(years_range, aggregation):
         xaxis_title='Time',
         yaxis_title='Total Amount Awarded (£)',
         template='plotly_white'
+    )
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        paper_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        xaxis_gridcolor='rgba(0,0,0,0)',  # Transparent gridlines
+        yaxis_gridcolor='rgba(0,0,0,0)'   # Transparent gridlines
     )
     return fig
 
@@ -386,6 +408,12 @@ def update_duration_chart(selected_departments):
         labels={'Duration_Category': 'Duration (Days)', 'Count': 'Number of Grants', 'Funding_Org:Department': 'Department'},
         template='plotly_white'
     )
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        paper_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        xaxis_gridcolor='rgba(0,0,0,0)',  # Transparent gridlines
+        yaxis_gridcolor='rgba(0,0,0,0)'   # Transparent gridlines
+    )
     return fig
 
 # --- Top N Grants Overall Callback ---
@@ -408,6 +436,12 @@ def update_top_grants_chart(top_n):
         labels={'Amount_awarded': 'Amount Awarded (£)', 'Title': 'Grant Title', 'Funding_Org:Department': 'Department'},
         template='plotly_white'
     )
+    fig.update_layout(
+        plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        paper_bgcolor='rgba(0,0,0,0)',  # Transparent background
+        xaxis_gridcolor='rgba(0,0,0,0)',  # Transparent gridlines
+        yaxis_gridcolor='rgba(0,0,0,0)'   # Transparent gridlines
+    )
 
     # Sort bars in descending order
     fig.update_layout(
@@ -416,27 +450,46 @@ def update_top_grants_chart(top_n):
 
     return fig
 
-# --- Sentiment Analysis Graph Callback ---
+# --- Regression Analysis Graph Callback ---
 @app.callback(
-    Output('sentiment-chart', 'figure'),
-    [Input('year-slider', 'value')]
+    Output("regression-chart", "figure"),
+    [Input('year-slider', 'value'), Input('dropdown', "value")]
 )
-def update_sentiment_chart(years_range):
+def update_regression_chart(years_range, name):
     filtered_df = df[
         (df['Award_Date'].dt.year >= years_range[0]) &
         (df['Award_Date'].dt.year <= years_range[1])
     ]
 
-    # Create the scatter plot
-    fig = px.scatter(
-        filtered_df,
-        x='Sentiment_Score',
-        y='Amount_awarded',
-        title='Sentiment Score vs. Amount Awarded',
-        labels={'Sentiment_Score': 'Sentiment Score (Compound)', 'Amount_awarded': 'Amount Awarded (£)'},
-        template='plotly_white'
-    )
+    X = filtered_df['Duration_(Days)'].values[:, None]
+    y = filtered_df['Amount_awarded']
+    X = np.nan_to_num(X)
+    y = np.nan_to_num(y)
 
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, random_state=42)
+
+    model = models[name]()
+    model.fit(X_train, y_train)
+
+    x_range = np.linspace(X.min(), X.max(), 100)
+    y_range = model.predict(x_range.reshape(-1, 1))
+
+    fig = go.Figure([
+        go.Scatter(x=X_train.squeeze(), y=y_train,
+                   name='train', mode='markers'),
+        go.Scatter(x=X_test.squeeze(), y=y_test,
+                   name='test', mode='markers'),
+        go.Scatter(x=x_range, y=y_range,
+                   name='prediction')
+    ])
+
+    fig.update_layout(
+        plot_bgcolor='white',  # White background
+        paper_bgcolor='white',  # White background
+        xaxis_gridcolor='rgba(0,0,0,0)',  # Transparent gridlines
+        yaxis_gridcolor='rgba(0,0,0,0)'   # Transparent gridlines
+    )
     return fig
 
 # --- Department Drill-Down Callback ---
