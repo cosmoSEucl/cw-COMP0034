@@ -174,7 +174,7 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H3("Grants Timeline", className="mb-3 text-primary"),
+                    html.H3("Overall Grants Timeline", className="mb-3 text-primary"),
                     dcc.Dropdown(
                         id='timeline-aggregation',
                         options=[
@@ -195,7 +195,7 @@ app.layout = dbc.Container([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H3("Interactive Time Series", className="mb-3 text-primary"),
+                    html.H3(id="interactive-timeline-title", className="mb-3 text-primary"),
                     dcc.Dropdown(
                         id='department-selector',
                         options=[{'label': dept, 'value': dept} 
@@ -210,21 +210,24 @@ app.layout = dbc.Container([
         ], md=6)
     ], className="mb-4"),
 
-    # --- Top N Grants Overall ---
+    # --- Top N Grants Section (Sunburst Chart) ---
     dbc.Row([
         dbc.Col([
             dbc.Card([
                 dbc.CardBody([
-                    html.H3("Top N Grants Overall", className="mb-3 text-primary"),
+                    html.H3(id="top-grants-title", className="mb-3 text-primary", style={'textAlign': 'center'}),
                     dcc.Slider(
                         id='top-n-slider',
                         min=2,
                         max=20,
                         step=1,
-                        value=5,
+                        value=10,
                         marks={i: str(i) for i in range(2, 21)}
                     ),
-                    dcc.Graph(id='top-grants-chart')
+                    html.Div(
+                        dcc.Graph(id='top-grants-sunburst'),
+                        style={'display': 'flex', 'justifyContent': 'center'}
+                    )
                 ])
             ], className="shadow-sm")
         ])
@@ -236,6 +239,12 @@ app.layout = dbc.Container([
             dbc.Card([
                 dbc.CardBody([
                     html.H3("Grants Table", className="mb-3 text-primary"),
+                      # --- Search Bar for Table ---
+                    dbc.Row([
+                        dbc.Col([
+                            dbc.Input(type="search", id="table-search", placeholder="Search the table..."),
+                         ])
+                    ], className="mb-2"),
                     dash_table.DataTable(
                         id='department-table',
                         columns=[{"name": i, "id": i} for i in df.columns],
@@ -391,7 +400,6 @@ def update_timeline_chart(aggregation):
     ))
 
     fig.update_layout(
-        title='Grants Timeline',
         xaxis_title='Time',
         yaxis_title='Total Amount Awarded (£)',
         template='plotly_white',
@@ -463,7 +471,6 @@ def update_interactive_timeline(selected_department):
     
     # Update layout
     fig.update_layout(
-        title_text=f"Grant Awards Time Series - {selected_department}",
         xaxis=dict(
             rangeselector=dict(
                 buttons=list([
@@ -500,30 +507,62 @@ def update_wordcloud(selected_departments):
 
 # --- Top Grants Callback ---
 @app.callback(
-    Output('top-grants-chart', 'figure'),
+    Output('top-grants-sunburst', 'figure'),
     [Input('top-n-slider', 'value')]
 )
-def update_top_grants_chart(top_n):
-    top_grants = df.nlargest(top_n, 'Amount_awarded')
+def update_top_grants_sunburst(top_n):
+    # Aggregate grants with the same title
+    aggregated_grants = df.groupby(['Title', 'Funding_Org:Department'], as_index=False)['Amount_awarded'].sum()
 
-    fig = px.bar(
+    # Get the top N grants
+    top_grants = aggregated_grants.nlargest(top_n, 'Amount_awarded')
+
+    # Sunburst Chart
+    sunburst_fig = px.sunburst(
         top_grants,
-        x='Title',
-        y='Amount_awarded',
+        path=['Funding_Org:Department', 'Title'],
+        values='Amount_awarded',
         color='Funding_Org:Department',
-        color_discrete_map=department_colors,
-        labels={'Amount_awarded': 'Amount Awarded (£)', 'Title': 'Grant Title', 'Funding_Org:Department': 'Department'},
-        title=f'Top {top_n} Grants',
-        template='plotly_white'
+        color_discrete_map=department_colors
     )
-    fig.update_layout(
-        xaxis={'categoryorder': 'total ascending'},
-        plot_bgcolor='rgba(0,0,0,0)',  # Transparent background
-        paper_bgcolor='rgba(0,0,0,0)',  # Transparent background
-        xaxis_gridcolor='rgba(0,0,0,0)',  # Transparent gridlines
-        yaxis_gridcolor='rgba(0,0,0,0)'   # Transparent gridlines
+
+    sunburst_fig.update_layout(
+        margin=dict(l=0, r=0, b=0, t=30),
+        plot_bgcolor='rgba(0,0,0,0)',
+        paper_bgcolor='rgba(0,0,0,0)'
     )
-    return fig
+
+    return sunburst_fig
+
+# --- Table Data Callback with Search ---
+@app.callback(
+    Output('department-table', 'data'),
+    [Input('table-search', 'value')]
+)
+def update_table(search_term):
+    if search_term:
+        # Apply the search filter
+        filtered_df = df[df.apply(lambda row: row.astype(str).str.contains(search_term, case=False).any(), axis=1)]
+        data = filtered_df.to_dict('records')
+    else:
+        # If no search term, return the entire dataset
+        data = df.to_dict('records')
+    return data
+
+# --- Dynamic Titles Callback ---
+@app.callback(
+    Output('interactive-timeline-title', 'children'),
+    [Input('department-selector', 'value')]
+)
+def update_interactive_timeline_title(selected_department):
+    return f"Grant Awards Time Series - {selected_department}"
+
+@app.callback(
+    Output('top-grants-title', 'children'),
+    [Input('top-n-slider', 'value')]
+)
+def update_top_grants_title(top_n):
+    return f"Top {top_n} Grants - Sunburst Chart"
 
 if __name__ == '__main__':
     app.run_server(debug=True)
