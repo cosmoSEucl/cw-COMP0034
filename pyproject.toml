@@ -1,24 +1,32 @@
-# Basic project information
-[project]
-name = "comp0034-tutorials"
-version = "2025.0.1"
-readme = "README.md"
-
-# Most students will use setuptools, though poetry is also an option
+# Documentation for pyproject.toml: https://packaging.python.org/en/latest/guides/writing-pyproject-toml/
 [build-system]
-requires = ["setuptools",  "setuptools_scm"]
+requires = ["setuptools", "setuptools_scm"]
 build-backend = "setuptools.build_meta"
 
-# Setuptools configuration see https://setuptools.pypa.io/en/latest/userguide/package_discovery.html#src-layout
-# By default setuptools will look for `src` directory and auto discover packages
+# name and version are mandatory, change the values but do not delete them.
+[project]
+name = "comp0035-CosmoSEucl"
+version = "2024.1"
+description = "COMP0035 Coursework using GLA Grants data"
 
-# Setuptools configuration for the data files see https://setuptools.pypa.io/en/stable/userguide/datafiles.html
+dependencies = [
+    "pandas",
+    "matplotlib",
+    "pathlib",
+    "flake8",
+    "pylint",
+    "openpyxl",
+    "plotly",
+    "dash",
+    "dash-bootstrap-components",
+    "flask",
+    "flask_sqlalchemy",
+    "selenium",
+    "networkx",
+    "wordcloud",
+    "scikit-learn"
+]
 
-# Pytest configuration see https://docs.pytest.org/en/stable/reference/customize.html
-# and https://docs.pytest.org/en/stable/reference/reference.html#ini-options-ref
 [tool.pytest.ini_options]
-minversion = "6.0"
-addopts = "-rA -v"
-testpaths = ["tests"]
-pythonpath = ["src"]
-filterwarnings = ["ignore::DeprecationWarning"]
+testpaths = ["coursework1/code"]
+pythonpath = [".", "coursework1/code"]
