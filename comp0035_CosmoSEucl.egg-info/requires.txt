@@ -1,0 +1,15 @@
+pandas
+matplotlib
+pathlib
+flake8
+pylint
+openpyxl
+plotly
+dash
+dash-bootstrap-components
+flask
+flask_sqlalchemy
+selenium
+networkx
+wordcloud
+scikit-learn

@@ -17,3 +17,4 @@ pytest-cov
 networkx
 wordcloud
 scikit-learn
+nltk
