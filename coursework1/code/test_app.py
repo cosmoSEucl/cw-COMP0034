@@ -159,3 +159,29 @@ def test_department_pie_chart_updates_on_slider_change(dash_duo: WebDriver):
     # Get updated chart
     updated_pie_chart = dash_duo.find_element(By.ID, "department-pie-chart").get_attribute('innerHTML')
     assert initial_pie_chart != updated_pie_chart
+
+def test_pie_chart_hover_updates_card(dash_duo: WebDriver):
+    """
+    Tests that hovering over a pie chart segment displays an information card
+    with the correct data.
+    """
+    # 1. Arrange: Locate the pie chart segment
+    pie_segment_selector = "path.surface"  # From your inspection
+    pie_segment = WebDriverWait(dash_duo, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, pie_segment_selector))
+    )
+
+    # 2. Act: Hover over the pie chart segment
+    actions = ActionChains(dash_duo)
+    actions.move_to_element(pie_segment).pause(0.5).perform()  # Short pause
+
+    # Wait for card element
+    card_element = WebDriverWait(dash_duo, 10).until(
+        EC.presence_of_element_located((By.CSS_SELECTOR, "text.nums")) # Check here
+    )
+
+    card_element_inner_text = card_element.get_attribute("data-unformatted")
+
+    # Verify that the card is rendered with the data
+    assert "Department=" in card_element_inner_text, "Department is incorrect"
+    assert "Count=" in card_element_inner_text, "Count is incorrect"
