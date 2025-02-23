@@ -24,6 +24,22 @@ def dash_duo(request):
     yield driver
     driver.quit()
 
+def test_h1_heading_text(dash_duo: WebDriver):
+    """
+    GIVEN the app is running
+    WHEN the home page is available
+    THEN the H1 heading should have the text "Grant Funding Analysis"
+    """
+    # Wait for the H1 heading to be available on the page, timeout if this does not happen within 10 seconds
+    h1 = WebDriverWait(dash_duo, 10).until(
+        EC.presence_of_element_located((By.TAG_NAME, "h1"))
+    )
+
+    # Find the text content of the H1 heading element
+    h1_text = h1.text
+
+    # Assertion checks that the heading has the expected text
+    assert h1_text == "Grant Funding Analysis", "H1 heading text is incorrect"
 
 def test_wordcloud_updates_on_department_selection(dash_duo: WebDriver):
     # Wait for dropdown and scroll into view
