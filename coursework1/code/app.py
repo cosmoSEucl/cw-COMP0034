@@ -10,7 +10,6 @@ from pathlib import Path
 import pandas as pd
 from nltk.sentiment import SentimentIntensityAnalyzer
 
-# Initialize the Dash app with a modern Bootstrap theme
 meta_tags = [
     {"name": "viewport", "content": "width=device-width, initial-scale=1"},
 ]
@@ -60,7 +59,6 @@ def analyze_sentiment(text):
         return 0
 
 
-# Apply sentiment analysis to the DataFrame
 df['Sentiment_Score'] = df['Description_'].apply(analyze_sentiment)
 
 
@@ -110,7 +108,6 @@ def wordcloud_to_base64(wc):
     return base64.b64encode(img.getvalue()).decode()
 
 
-# Department Color Mapping
 department_colors = {
     'Communities and Intelligence': '#1f77b4',
     'Communities and Skills': '#ff7f0e',
@@ -217,7 +214,6 @@ def update_pie_and_duration_chart(years_range, click_data):
     """
     filtered_df = filter_dataframe(df, None, years_range)
 
-    # Pie Chart
     department_counts = filtered_df['Funding_Org:Department'].value_counts()
     department_counts = department_counts.reset_index()
     department_counts.columns = ['Department', 'Count']
@@ -231,7 +227,6 @@ def update_pie_and_duration_chart(years_range, click_data):
         color_discrete_map=department_colors
     )
 
-    # Duration Chart
     if click_data:
         selected_department = click_data['points'][0]['label']
         duration_df = filtered_df[
@@ -546,7 +541,6 @@ def update_top_grants_title(top_n):
     return f"Top {top_n} Grants - Sunburst Chart"
 
 
-# Layout definition
 app.layout = dbc.Container([
     dbc.Row([
         dbc.Col([

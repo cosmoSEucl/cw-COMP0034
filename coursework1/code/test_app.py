@@ -6,8 +6,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 import time
 from selenium.webdriver.remote.webdriver import WebDriver
-
-# Import your Dash app instance
 from app import df
 
 

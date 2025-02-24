@@ -37,7 +37,7 @@ In addition, I integrated a sentiment analysis using NLTK's `SentimentIntensityA
   <img src="tests.png" alt="Coverage test" style="max-width: 80%;" />
 </p>
 
- Having only computed 6 tests, I prioritised testing UI interactions (clicking dropdowns, checking visualization updates)and was not necessaribly able to test anymore edge cases. Indeed, most of my current tests do not directly test the underlying callback functions and data processing logic in app.py. 
+ Having only computed 6 tests, I prioritised testing UI interactions (clicking dropdowns, checking visualization updates)and was not necessaribly able to test anymore edge cases.
 
  ## Section 3: Linting
 
