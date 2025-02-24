@@ -31,6 +31,8 @@ I decided to include a word cloud as it provides a quick and intuitive way to id
 
 In addition, I integrated a sentiment analysis using NLTK's `SentimentIntensityAnalyzer` to provide insights into the tone of grant descriptions. The sentiment value for each individual grant can be seen in the `Sentiment` column of the Grants table at the bottom of the Dash app.
 
+In the Grant Awards Time Series, if within a specific department only one grant has been received, then, instead of the graph it will print: *There is only one grant with a value of £[...]*. See Economic Development Team for an example. 
+
 ## Section 2: Test code
 
 <p align="center">
