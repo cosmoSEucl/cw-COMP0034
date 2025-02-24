@@ -18,3 +18,4 @@ networkx
 wordcloud
 scikit-learn
 nltk
+flake8
