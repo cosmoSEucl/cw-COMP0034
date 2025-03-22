@@ -1,0 +1,35 @@
+{% extends "layout.html" %}
+{% block title %}Grants Dataset{% endblock %}
+{% block content %}
+<h1>Grants Dataset</h1>
+<p class="lead">Browse through the GLA grants dataset to better understand funded projects.</p>
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Amount Awarded (£)</th>
+                <th>Department</th>
+                <th>Recipient</th>
+                <th>Category</th>
+                <th>Award Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for grant in grants %}
+            <tr>
+                <td>{{ grant.title }}</td>
+                <td>{{ grant.description }}</td>
+                <td>{{ "{:,.2f}".format(grant.amount_awarded) }}</td>
+                <td>{{ grant.funding_org_department }}</td>
+                <td>{{ grant.recipient_org_name }}</td>
+                <td>{{ grant.category }}</td>
+                <td>{{ grant.award_date }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

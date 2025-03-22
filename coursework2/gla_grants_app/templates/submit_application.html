@@ -1,0 +1,88 @@
+{% extends "layout.html" %}
+{% block title %}Submit Application{% endblock %}
+{% block content %}
+<h1>Submit Application Snippet</h1>
+<p class="lead">Submit a snippet of your grant application for expert feedback before submitting your official application to the GLA.</p>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.title.label(class="form-label") }}
+                        {{ form.title(class="form-control") }}
+                        {% if form.title.errors %}
+                            <div class="text-danger">
+                                {% for error in form.title.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.description.label(class="form-label") }}
+                        {{ form.description(class="form-control", rows=5) }}
+                        {% if form.description.errors %}
+                            <div class="text-danger">
+                                {% for error in form.description.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.category.label(class="form-label") }}
+                        {{ form.category(class="form-select") }}
+                        {% if form.category.errors %}
+                            <div class="text-danger">
+                                {% for error in form.category.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.question.label(class="form-label") }}
+                        {{ form.question(class="form-control", rows=3) }}
+                        <div class="form-text">Any specific questions you'd like feedback on?</div>
+                        {% if form.question.errors %}
+                            <div class="text-danger">
+                                {% for error in form.question.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Tips for a Successful Application
+            </div>
+            <div class="card-body">
+                <ul>
+                    <li>Be clear and concise about your project goals</li>
+                    <li>Explain how your project aligns with GLA priorities</li>
+                    <li>Include realistic budget estimates</li>
+                    <li>Highlight the expected impact on the community</li>
+                    <li>Provide a clear timeline for implementation</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

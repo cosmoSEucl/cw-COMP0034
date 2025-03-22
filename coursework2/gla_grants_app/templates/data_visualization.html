@@ -1,0 +1,28 @@
+{% extends "layout.html" %}
+{% block title %}Data Visualization{% endblock %}
+{% block content %}
+<h1>Grant Data Visualization</h1>
+<p class="lead">Explore trends in GLA grant applications to help make informed decisions.</p>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="card mb-4">
+            <div class="card-header">
+                Funding Distribution by Category
+            </div>
+            <div class="card-body">
+                {{ chart_html|safe }}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <p>
+            These visualizations provide insights into historical grant patterns. Use this information to understand
+            where funding has been allocated and to help shape your grant application.
+        </p>
+    </div>
+</div>
+{% endblock %}

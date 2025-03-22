@@ -1,0 +1,46 @@
+{% extends "layout.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="jumbotron">
+    <h1 class="display-4">Greater London Authority Grants</h1>
+    <p class="lead">
+        This web application helps prospective GLA grant applicants assess their likelihood of success
+        concisely and simply, without submitting full applications.
+    </p>
+    <hr class="my-4">
+    <p>
+        The GLA (Greater London Authority) provides funding for various projects across London. This application
+        allows you to explore past grant data, visualize trends, and submit snippets of your application for feedback
+        before submitting your official grant application to the GLA.
+    </p>
+    <div class="row mt-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Data Visualization</h5>
+                    <p class="card-text">Explore past grant trends to help make informed decisions.</p>
+                    <a href="{{ url_for('main.data_visualization') }}" class="btn btn-primary">View Charts</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Grants Dataset</h5>
+                    <p class="card-text">Browse and filter the complete grants dataset.</p>
+                    <a href="{{ url_for('main.grants_dataset') }}" class="btn btn-primary">Explore Data</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Submit Application</h5>
+                    <p class="card-text">Submit a snippet of your application for expert feedback.</p>
+                    <a href="{{ url_for('main.submit_application') }}" class="btn btn-primary">Apply Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
