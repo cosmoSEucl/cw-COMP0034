@@ -1,7 +1,7 @@
 import pandas as pd
 import os
-from gla_grants_app import db
-from gla_grants_app.models import Grant, User
+from coursework2.gla_grants_app import db
+from coursework2.gla_grants_app.models import Grant, User
 
 def setup_db_data():
     """Setup database with initial data if it's empty"""

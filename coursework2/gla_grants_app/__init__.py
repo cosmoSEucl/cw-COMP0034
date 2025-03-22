@@ -38,14 +38,14 @@ def create_app(test_config=None):
 
     with app.app_context():
         # Import and register the blueprint
-        from gla_grants_app.routes import main
+        from coursework2.gla_grants_app.routes import main
         app.register_blueprint(main)
         
         # Create database tables
         db.create_all()
         
         # Import and setup data if database is empty
-        from gla_grants_app.helpers import setup_db_data
+        from coursework2.gla_grants_app.helpers import setup_db_data
         setup_db_data()
 
     return app

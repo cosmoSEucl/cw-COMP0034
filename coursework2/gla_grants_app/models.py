@@ -1,7 +1,7 @@
 from sqlalchemy import String, Integer, Float, Text, ForeignKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
-from gla_grants_app import db
+from coursework2.gla_grants_app import db
 
 class Grant(db.Model):
     """Model representing GLA grant data"""

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash
-from gla_grants_app import db
-from gla_grants_app.models import Grant, User, GrantApplication
-from gla_grants_app.forms import ApplicationForm, LoginForm
+from coursework2.gla_grants_app import db
+from coursework2.gla_grants_app.models import Grant, User, GrantApplication
+from coursework2.gla_grants_app.forms import ApplicationForm, LoginForm
 from sqlalchemy import func
 import plotly.express as px
 import pandas as pd
