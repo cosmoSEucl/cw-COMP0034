@@ -1,5 +1,10 @@
 from flask import render_template, request, redirect, url_for
-from .models import db, GrantApplication
+from run import db  # Import the db instance from run.py
+from .models import GrantApplication
+from .forms import GrantApplicationForm
+from . import create_app
+
+app = create_app()
 
 @app.route('/')
 def index():
@@ -7,10 +12,17 @@ def index():
 
 @app.route('/submit', methods=['GET', 'POST'])
 def submit():
-    if request.method == 'POST':
-        # Save submission to database
-        pass
-    return render_template('submit.html')
+    form = GrantApplicationForm()
+    if form.validate_on_submit():
+        new_application = GrantApplication(
+            title=form.title.data,
+            description=form.description.data,
+            category=form.category.data
+        )
+        db.session.add(new_application)
+        db.session.commit()
+        return redirect(url_for('index'))
+    return render_template('submit.html', form=form)
 
 @app.route('/admin')
 def admin():
