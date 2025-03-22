@@ -27,3 +27,8 @@ Flake8 can be run on the code files using the following commands:
 *   `flake8 test_app.py`
 
 See GitHub repository [here](https://github.com/ucl-comp0035/comp0034-cw-cosmoSEucl.git). 
+
+
+Passwords for coursework 2:
+- Admin: username *admin* and password *admin123* 
+- User: username *user1* and password *user_password*

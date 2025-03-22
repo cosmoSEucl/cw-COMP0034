@@ -1,5 +1,6 @@
 import pandas as pd
 import os
+from werkzeug.security import generate_password_hash
 from coursework2.gla_grants_app import db
 from coursework2.gla_grants_app.models import Grant, User
 
@@ -64,23 +65,30 @@ def setup_db_data():
                 grant = Grant(**item)
                 db.session.add(grant)
             
-            # Add a sample admin user
-            admin_user = User(
-                username='admin',
-                password='admin_password',  # This should be hashed in a real app
-                is_admin=True
-            )
-            db.session.add(admin_user)
+            # Check if admin user already exists
+            admin_exists = db.session.query(User).filter_by(username='admin').first()
+            if not admin_exists:
+                # Add a sample admin user with hashed password
+                admin_user = User(
+                    username='admin',
+                    password=generate_password_hash('admin_password'),
+                    is_admin=True
+                )
+                db.session.add(admin_user)
             
-            # Add a sample regular user
-            regular_user = User(
-                username='user',
-                password='user_password',  # This should be hashed in a real app
-                is_admin=False
-            )
-            db.session.add(regular_user)
+            # Check if regular user already exists
+            user_exists = db.session.query(User).filter_by(username='user').first()
+            if not user_exists:
+                # Add a sample regular user with hashed password
+                regular_user = User(
+                    username='user',
+                    password=generate_password_hash('user_password'),
+                    is_admin=False
+                )
+                db.session.add(regular_user)
             
             db.session.commit()
+            print("Database setup complete with sample data and users")
         except Exception as e:
             print(f"Error setting up database: {e}")
             db.session.rollback()

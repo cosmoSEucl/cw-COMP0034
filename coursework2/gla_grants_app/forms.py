@@ -1,7 +1,21 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, PasswordField, SubmitField
-from wtforms.validators import DataRequired, Length, Email
+from wtforms.validators import DataRequired, Length, Email, EqualTo
 
+class LoginForm(FlaskForm):
+    """Form for user login"""
+    username = StringField('Username', validators=[DataRequired()])
+    password = PasswordField('Password', validators=[DataRequired()])
+    submit = SubmitField('Login')
+
+class RegistrationForm(FlaskForm):
+    """Form for user registration"""
+    username = StringField('Username', validators=[DataRequired(), Length(min=4, max=50)])
+    password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm Password', 
+                                     validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
+    submit = SubmitField('Register')
+    
 class ApplicationForm(FlaskForm):
     """Form for submitting grant applications"""
     title = StringField('Title', validators=[DataRequired(), Length(max=200)])
@@ -19,9 +33,3 @@ class ApplicationForm(FlaskForm):
                          ])
     question = TextAreaField('Question', validators=[DataRequired()])
     submit = SubmitField('Submit Application')
-
-class LoginForm(FlaskForm):
-    """Form for user login"""
-    username = StringField('Username', validators=[DataRequired()])
-    password = PasswordField('Password', validators=[DataRequired()])
-    submit = SubmitField('Login')

@@ -2,6 +2,7 @@ import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
+import secrets
 
 # Create a SQLAlchemy declarative base
 class Base(DeclarativeBase):
@@ -16,7 +17,7 @@ def create_app(test_config=None):
     
     # Configure the app
     app.config.from_mapping(
-        SECRET_KEY='dev',
+        SECRET_KEY=secrets.token_hex(16),
         SQLALCHEMY_DATABASE_URI="sqlite:///" + os.path.join(app.instance_path, 'gla_grants.sqlite'),
     )
 
@@ -36,6 +37,9 @@ def create_app(test_config=None):
     # Initialize the database
     db.init_app(app)
 
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.config['SESSION_PERMANENT'] = False
+    
     with app.app_context():
         # Import and register the blueprint
         from coursework2.gla_grants_app.routes import main
