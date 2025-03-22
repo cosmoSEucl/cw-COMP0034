@@ -19,3 +19,8 @@ wordcloud
 scikit-learn
 nltk
 flake8
+
+Flask-Migrate
+Flask-WTF
+email-validator 
+pytest
