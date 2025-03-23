@@ -182,13 +182,19 @@ def init_dash(server):
     ]
     external_stylesheets = [dbc.themes.FLATLY]
     
+    # Create assets folder if it doesn't exist
+    assets_folder = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets')
+    if not os.path.exists(assets_folder):
+        os.makedirs(assets_folder)
+    
     app = Dash(
         __name__,
         server=server,
         url_base_pathname='/dash/',
         external_stylesheets=external_stylesheets,
         meta_tags=meta_tags,
-        suppress_callback_exceptions=True
+        suppress_callback_exceptions=True,
+        assets_folder=assets_folder
     )
     
     # Create metric card component
@@ -226,32 +232,23 @@ def init_dash(server):
 
         return filtered_df
     
-    # Define app layout
+    # Define app layout - optimized for iframe embedding with white background
     app.layout = dbc.Container([
-        dbc.Row([
-            dbc.Col([
-                html.H1(
-                    "Grant Funding Analysis",
-                    className="text-center mb-3 mt-3",
-                    style={'color': '#2C3E50', 'font-weight': 'bold'}
-                )
-            ])
-        ], className="mb-4"),
-
+        # Metrics cards
         dbc.Row([
             dbc.Col(MetricCard("Total Grants Value (Millions)", id="total-value"),
                     width=6),
             dbc.Col(MetricCard("Total Number of Grants", id="total-number"),
                     width=6),
-        ], className="mb-4"),
+        ], className="mb-3"),  # Reduced margin for iframe
 
         dbc.Row([
             dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3(
+                        html.H4(
                             "Grants by Department",
-                            className="mb-3 text-primary"),
+                            className="mb-2 text-primary"),  # Smaller header
                         dbc.Row([
                             dbc.Col(
                                 dcc.RangeSlider(
@@ -280,15 +277,15 @@ def init_dash(server):
                     ])
                 ], className="shadow-sm")
             ])
-        ], className="mb-4"),
+        ], className="mb-3"),  # Reduced margin for iframe
 
         dbc.Row([
             dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3(
+                        html.H4(
                             "Word Cloud of Grant Titles",
-                            className="mb-3 text-primary",
+                            className="mb-2 text-primary",
                             style={'textAlign': 'center'}
                         ),
                         dcc.Dropdown(
@@ -299,10 +296,10 @@ def init_dash(server):
                             ],
                             multi=True,
                             placeholder="Select Departments",
-                            className="mb-3"
+                            className="mb-2"  # Reduced margin
                         ),
                         html.Div(
-                            html.Img(id="wordcloud", style={'height': '400px'}),
+                            html.Img(id="wordcloud", style={'height': '350px'}),  # Reduced height for iframe
                             style={
                                 'display': 'flex',
                                 'justifyContent': 'center'
@@ -311,15 +308,15 @@ def init_dash(server):
                     ])
                 ], className="shadow-sm")
             ])
-        ], className="mb-4"),
+        ], className="mb-3"),  # Reduced margin for iframe
 
         dbc.Row([
             dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3(
+                        html.H4(
                             "Overall Grants Timeline",
-                            className="mb-3 text-primary"
+                            className="mb-2 text-primary"  # Reduced margin
                         ),
                         dcc.Dropdown(
                             id='timeline-aggregation',
@@ -330,11 +327,11 @@ def init_dash(server):
                             ],
                             value='YE',
                             clearable=False,
-                            className="mb-3"
+                            className="mb-2"  # Reduced margin
                         ),
                         dcc.Graph(
                             id='timeline-chart',
-                            style={'height': '400px'}
+                            style={'height': '350px'}  # Reduced height for iframe
                         )
                     ])
                 ], className="shadow-sm")
@@ -343,9 +340,9 @@ def init_dash(server):
             dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3(
+                        html.H4(
                             id="interactive-timeline-title",
-                            className="mb-3 text-primary"
+                            className="mb-2 text-primary"  # Reduced margin
                         ),
                         dcc.Dropdown(
                             id='department-selector',
@@ -355,24 +352,24 @@ def init_dash(server):
                             ],
                             value=df['Funding_Org:Department'].iloc[0],
                             clearable=False,
-                            className="mb-3"
+                            className="mb-2"  # Reduced margin
                         ),
                         dcc.Graph(
                             id='interactive-timeline',
-                            style={'height': '400px'}
+                            style={'height': '350px'}  # Reduced height for iframe
                         )
                     ])
                 ], className="shadow-sm")
             ], md=6)
-        ], className="mb-4"),
+        ], className="mb-3"),  # Reduced margin for iframe
 
         dbc.Row([
             dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3(
+                        html.H4(
                             id="top-grants-title",
-                            className="mb-3 text-primary",
+                            className="mb-2 text-primary",
                             style={'textAlign': 'center'}
                         ),
                         dcc.Slider(
@@ -384,7 +381,7 @@ def init_dash(server):
                             marks={i: str(i) for i in range(2, 21, 2)}
                         ),
                         html.Div(
-                            dcc.Graph(id='top-grants-sunburst'),
+                            dcc.Graph(id='top-grants-sunburst', style={'height': '350px'}),  # Reduced height for iframe
                             style={
                                 'display': 'flex',
                                 'justifyContent': 'center'
@@ -393,13 +390,13 @@ def init_dash(server):
                     ])
                 ], className="shadow-sm")
             ])
-        ], className="mb-4"),
+        ], className="mb-3"),  # Reduced margin for iframe
 
         dbc.Row([
             dbc.Col([
                 dbc.Card([
                     dbc.CardBody([
-                        html.H3("Grants Table", className="mb-3 text-primary"),
+                        html.H4("Grants Table", className="mb-2 text-primary"),  # Smaller header
                         dbc.Row([
                             dbc.Col([
                                 dbc.Input(
@@ -408,7 +405,7 @@ def init_dash(server):
                                     placeholder="Search the table..."
                                 ),
                             ])
-                        ], className="mb-2"),
+                        ], className="mb-2"),  # Reduced margin
                         dash_table.DataTable(
                             id='department-table',
                             columns=[
@@ -420,7 +417,7 @@ def init_dash(server):
                             page_action="native",
                             page_current=0,
                             page_size=10,
-                            style_table={'overflowX': 'auto'},
+                            style_table={'overflowX': 'auto', 'height': '350px'},  # Added fixed height for iframe
                             style_cell={
                                 'minWidth': '50px',
                                 'width': '100px',
@@ -440,13 +437,13 @@ def init_dash(server):
                                 }
                             ],
                             fixed_rows={'headers': True},
-                            virtualization=False,
+                            virtualization=True,  # Enable for better performance in iframe
                         ),
                     ])
                 ], className="shadow-sm")
             ])
-        ], className="mb-4"),
-    ], fluid=True, style={'background-color': '#f8f9fa', 'padding': '20px'})
+        ], className="mb-3"),  # Reduced margin for iframe
+    ], fluid=True, style={'background-color': '#ffffff', 'padding': '10px'})  # White background with reduced padding for iframe
     
     # Define callbacks
     @app.callback(
@@ -489,6 +486,8 @@ def init_dash(server):
             color='Department',
             color_discrete_map=department_colors
         )
+        # Make the pie chart more compact for iframe
+        pie_fig.update_layout(margin=dict(l=20, r=20, t=30, b=20), paper_bgcolor='rgba(0,0,0,0)')
 
         if click_data:
             selected_department = click_data['points'][0]['label']
@@ -540,11 +539,13 @@ def init_dash(server):
             },
             template='plotly_white'
         )
+        # Make the duration chart more compact for iframe
         duration_fig.update_layout(
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis_gridcolor='rgba(0,0,0,0)',
-            yaxis_gridcolor='rgba(0,0,0,0)'
+            plot_bgcolor='rgba(0,0,0,0.02)',  # Very light gray for plot area
+            paper_bgcolor='rgba(0,0,0,0)',    # Transparent paper background
+            xaxis_gridcolor='rgba(0,0,0,0.1)',
+            yaxis_gridcolor='rgba(0,0,0,0.1)',
+            margin=dict(l=20, r=20, t=30, b=20)
         )
         return pie_fig, duration_fig
     
@@ -576,10 +577,11 @@ def init_dash(server):
             xaxis_title='Time',
             yaxis_title='Total Amount Awarded (£)',
             template='plotly_white',
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)',
-            xaxis_gridcolor='rgba(0,0,0,0)',
-            yaxis_gridcolor='rgba(0,0,0,0)'
+            plot_bgcolor='rgba(0,0,0,0.02)',  # Very light gray for plot area
+            paper_bgcolor='rgba(0,0,0,0)',    # Transparent paper background
+            xaxis_gridcolor='rgba(0,0,0,0.1)',
+            yaxis_gridcolor='rgba(0,0,0,0.1)',
+            margin=dict(l=20, r=20, t=10, b=20)  # More compact for iframe
         )
         return fig
     
@@ -609,7 +611,8 @@ def init_dash(server):
                         'xaxis': {'visible': False},
                         'yaxis': {'visible': False},
                         'paper_bgcolor': 'rgba(0,0,0,0)',
-                        'plot_bgcolor': 'rgba(0,0,0,0)'
+                        'plot_bgcolor': 'rgba(255,255,255,1)',  # White plot background,
+                        'margin': dict(l=20, r=20, t=10, b=20)  # More compact for iframe
                     }
                 }
             else:
@@ -623,7 +626,8 @@ def init_dash(server):
                         'xaxis': {'visible': False},
                         'yaxis': {'visible': False},
                         'paper_bgcolor': 'rgba(0,0,0,0)',
-                        'plot_bgcolor': 'rgba(0,0,0,0)'
+                        'plot_bgcolor': 'rgba(255,255,255,1)',  # White plot background,
+                        'margin': dict(l=20, r=20, t=10, b=20)  # More compact for iframe
                     }
                 }
 
@@ -661,7 +665,8 @@ def init_dash(server):
                 type="date"
             ),
             yaxis_title='Amount Awarded (£)',
-            template='plotly_white'
+            template='plotly_white',
+            margin=dict(l=20, r=20, t=10, b=20)  # More compact for iframe
         )
         return fig
     
@@ -707,9 +712,9 @@ def init_dash(server):
         )
 
         sunburst_fig.update_layout(
-            margin=dict(l=0, r=0, b=0, t=30),
-            plot_bgcolor='rgba(0,0,0,0)',
-            paper_bgcolor='rgba(0,0,0,0)'
+            margin=dict(l=0, r=0, b=0, t=10),
+            plot_bgcolor='rgba(0,0,0,0.02)',  # Very light gray for plot area
+            paper_bgcolor='rgba(0,0,0,0)'     # Transparent paper background
         )
 
         return sunburst_fig
@@ -756,5 +761,53 @@ def init_dash(server):
         Update the top grants title based on selected number of grants.
         """
         return f"Top {top_n} Grants - Sunburst Chart"
+    
+    # Create the custom CSS file
+    css_content = """
+    /* Custom styles for embedded dashboard */
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #ffffff !important;
+    }
+
+    .container-fluid {
+        padding-left: 10px !important;
+        padding-right: 10px !important;
+        background-color: #ffffff !important;
+    }
+
+    .card {
+        margin-bottom: 15px !important;
+    }
+
+    h4 {
+        font-size: 1.2rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .mb-3 {
+        margin-bottom: 0.7rem !important;
+    }
+
+    /* Make elements more compact for iframe display */
+    .dash-graph {
+        margin-bottom: 0 !important;
+    }
+    
+    /* Fix transparent element issues */
+    .dash-spreadsheet-container .dash-spreadsheet-inner th,
+    .dash-spreadsheet-container .dash-spreadsheet-inner td {
+        background-color: inherit !important;
+    }
+    """
+    
+    # Write the custom CSS file to the assets folder
+    css_path = os.path.join(assets_folder, 'custom.css')
+    try:
+        with open(css_path, 'w') as f:
+            f.write(css_content)
+    except Exception as e:
+        print(f"Warning: Could not write custom CSS file: {e}")
     
     return app

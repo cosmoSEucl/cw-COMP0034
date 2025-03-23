@@ -24,9 +24,6 @@
                         <a class="nav-link" href="{{ url_for('main.dash_visualization') }}">Advanced Visualization</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.grants_dataset') }}">Grants Dataset</a>
-                    </li>
-                    <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.submit_application') }}">Submit Application</a>
                     </li>
                     {% if session.get('is_admin') %}
@@ -38,6 +35,9 @@
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     {% if session.get('user_id') %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('main.account') }}">My Account</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
                     </li>

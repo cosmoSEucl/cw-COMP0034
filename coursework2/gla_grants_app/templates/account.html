@@ -1,0 +1,102 @@
+{% extends "layout.html" %}
+{% block title %}My Account{% endblock %}
+{% block content %}
+<h1>Profile</h1>
+
+<div class="row mt-5">
+    <div class="col-md-6">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h3>Change Password</h3>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ password_form.hidden_tag() }}
+
+                    <div class="mb-3">
+                        {{ password_form.old_password.label(class="form-label") }}
+                        {{ password_form.old_password(class="form-control") }}
+                        {% if password_form.old_password.errors %}
+                            <div class="text-danger">
+                                {% for error in password_form.old_password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ password_form.new_password.label(class="form-label") }}
+                        {{ password_form.new_password(class="form-control") }}
+                        {% if password_form.new_password.errors %}
+                            <div class="text-danger">
+                                {% for error in password_form.new_password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ password_form.confirm_password.label(class="form-label") }}
+                        {{ password_form.confirm_password(class="form-control") }}
+                        {% if password_form.confirm_password.errors %}
+                            <div class="text-danger">
+                                {% for error in password_form.confirm_password.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-grid">
+                        {{ password_form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h3>Application Tracker</h3>
+            </div>
+            <div class="card-body">
+                {% if applications %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Submitted</th>
+                                    <th>Comments</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for application in applications %}
+                                <tr>
+                                    <td>{{ application.title }}</td>
+                                    <td>{{ application.date_submitted }}</td>
+                                    <td>
+                                        {% if application.comment %}
+                                            {{ application.comment }}
+                                        {% else %}
+                                            <em>No feedback yet, stay tuned!</em>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        You haven't submitted any applications yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

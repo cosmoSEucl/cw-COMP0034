@@ -2,10 +2,11 @@ from flask import Blueprint, render_template, redirect, url_for, request, flash,
 from werkzeug.security import generate_password_hash, check_password_hash
 from coursework2.gla_grants_app import db
 from coursework2.gla_grants_app.models import Grant, User, GrantApplication
-from coursework2.gla_grants_app.forms import ApplicationForm, LoginForm, RegistrationForm
+from coursework2.gla_grants_app.forms import ApplicationForm, LoginForm, RegistrationForm, PasswordChangeForm
 from sqlalchemy import func
 import plotly.express as px
 import pandas as pd
+
 
 # Create blueprint
 main = Blueprint('main', __name__)
@@ -95,24 +96,13 @@ def index():
 # Add login required check to other routes
 @main.route('/dash-visualization')
 def dash_visualization():
-    """Route to redirect directly to the Dash app"""
+    """Route to display Dash app within Flask template"""
     if 'user_id' not in session:
         flash('Please log in to access this page', 'warning')
         return redirect(url_for('main.login'))
         
-    # Redirect directly to the Dash app URL
-    return redirect('/dash/')
-
-@main.route('/grants-dataset')
-def grants_dataset():
-    """Grant dataset browsing page route"""
-    if 'user_id' not in session:
-        flash('Please log in to access this page', 'warning')
-        return redirect(url_for('main.login'))
-        
-    # Get grants data from database
-    grants = db.session.execute(db.select(Grant)).scalars().all()
-    return render_template('grants_dataset.html', grants=grants)
+    # Render the template with the iframe that embeds the Dash app
+    return render_template('dash_visualization.html')
 
 @main.route('/submit-application', methods=['GET', 'POST'])
 def submit_application():
@@ -174,3 +164,35 @@ def admin_review(application_id):
     
     flash('Feedback submitted successfully!', 'success')
     return redirect(url_for('main.admin_dashboard'))
+
+@main.route('/account', methods=['GET', 'POST'])
+def account():
+    """User account page with password change and application history"""
+    if 'user_id' not in session:
+        flash('Please log in to access this page', 'warning')
+        return redirect(url_for('main.login'))
+    
+    # Get the current user
+    user = db.get_or_404(User, session['user_id'])
+    
+    # Initialize the password change form
+    password_form = PasswordChangeForm()
+    
+    # Handle form submission for password change
+    if password_form.validate_on_submit():
+        # Verify old password
+        if check_password_hash(user.password, password_form.old_password.data):
+            # Update with new hashed password
+            user.password = generate_password_hash(password_form.new_password.data)
+            db.session.commit()
+            flash('Your password has been updated successfully!', 'success')
+            return redirect(url_for('main.account'))
+        else:
+            flash('Current password is incorrect.', 'danger')
+    
+    # Get user's application history
+    applications = db.session.execute(
+        db.select(GrantApplication).filter_by(user_id=session['user_id']).order_by(GrantApplication.date_submitted.desc())
+    ).scalars().all()
+    
+    return render_template('account.html', password_form=password_form, applications=applications)

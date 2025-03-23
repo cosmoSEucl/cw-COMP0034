@@ -7,57 +7,30 @@
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
-            <div class="card-header">
-                Interactive Dashboard
-            </div>
-            <div class="card-body">
-                <p>
-                    Our advanced dashboard provides detailed visualizations and analysis tools for exploring the GLA grants dataset.
-                    You can interact with the data using various filters, view different chart types, and gain insights into grant distribution patterns.
-                </p>
-                <a href="/dash/" class="btn btn-primary">Launch Dashboard</a>
+            <div class="card-body p-0" style="background-color: white;">
+                <!-- Embed the Dash app in an iframe -->
+                <iframe 
+                    src="/dash/" 
+                    style="width: 100%; height: 800px; border: none; overflow: hidden; background-color: white;"
+                    title="GLA Grants Dashboard"
+                    id="dash-iframe">
+                </iframe>
             </div>
         </div>
     </div>
 </div>
 
-<div class="row">
-    <div class="col-md-12">
-        <div class="card mb-4">
-            <div class="card-header">
-                Features
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <h5>Interactive Charts</h5>
-                        <p>Explore grant data through interactive pie charts, bar charts, and time series visualizations.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Word Cloud</h5>
-                        <p>Visualize common themes and keywords in grant titles and descriptions to identify trends.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Timeline Analysis</h5>
-                        <p>Track grant funding patterns over time with interactive timeline visualizations.</p>
-                    </div>
-                </div>
-                <div class="row mt-3">
-                    <div class="col-md-4">
-                        <h5>Department Breakdown</h5>
-                        <p>Compare funding allocation across different GLA departments.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Searchable Dataset</h5>
-                        <p>Browse and search the complete grants dataset with powerful filtering tools.</p>
-                    </div>
-                    <div class="col-md-4">
-                        <h5>Top Grants Visualization</h5>
-                        <p>Identify the highest-value grants and their distribution across departments.</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
+<!-- Add some JS to help with iframe resizing if needed -->
+<script>
+    // Adjust iframe height based on window size
+    function adjustIframeHeight() {
+        const iframe = document.getElementById('dash-iframe');
+        const windowHeight = window.innerHeight;
+        iframe.style.height = (windowHeight - 200) + 'px'; // Subtract header height and some padding
+    }
+    
+    // Call on load and when window is resized
+    window.addEventListener('load', adjustIframeHeight);
+    window.addEventListener('resize', adjustIframeHeight);
+</script>
 {% endblock %}

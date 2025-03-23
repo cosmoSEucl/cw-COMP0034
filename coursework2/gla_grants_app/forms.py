@@ -15,7 +15,15 @@ class RegistrationForm(FlaskForm):
     confirm_password = PasswordField('Confirm Password', 
                                      validators=[DataRequired(), EqualTo('password', message='Passwords must match')])
     submit = SubmitField('Register')
-    
+
+class PasswordChangeForm(FlaskForm):
+    """Form for changing user password"""
+    old_password = PasswordField('Old Password', validators=[DataRequired()])
+    new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
+    confirm_password = PasswordField('Confirm New Password', 
+                                  validators=[DataRequired(), EqualTo('new_password', message='Passwords must match')])
+    submit = SubmitField('Change Password')
+
 class ApplicationForm(FlaskForm):
     """Form for submitting grant applications"""
     title = StringField('Title', validators=[DataRequired(), Length(max=200)])
