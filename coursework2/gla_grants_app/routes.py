@@ -95,12 +95,13 @@ def index():
 # Add login required check to other routes
 @main.route('/dash-visualization')
 def dash_visualization():
-    """Route to redirect to the Dash app"""
+    """Route to redirect directly to the Dash app"""
     if 'user_id' not in session:
         flash('Please log in to access this page', 'warning')
         return redirect(url_for('main.login'))
         
-    return render_template('dash_visualization.html')
+    # Redirect directly to the Dash app URL
+    return redirect('/dash/')
 
 @main.route('/grants-dataset')
 def grants_dataset():

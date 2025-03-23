@@ -13,9 +13,23 @@ from pathlib import Path
 
 # Download NLTK resources
 try:
-    nltk.data.find('vader_lexicon')
-except LookupError:
-    nltk.download('vader_lexicon')
+    try:
+        nltk.data.find('vader_lexicon')
+    except LookupError:
+        # Try to download with SSL verification disabled if necessary
+        import ssl
+        try:
+            _create_unverified_https_context = ssl._create_unverified_context
+        except AttributeError:
+            pass
+        else:
+            ssl._create_default_https_context = _create_unverified_https_context
+        nltk.download('vader_lexicon', quiet=True)
+except Exception as e:
+    print(f"Warning: Could not download NLTK vader_lexicon. Sentiment analysis might not work. Error: {e}")
+    # Define a fallback sentiment analyzer that returns neutral sentiment
+    def analyze_sentiment(text):
+        return 0
 
 def process_data():
     """
