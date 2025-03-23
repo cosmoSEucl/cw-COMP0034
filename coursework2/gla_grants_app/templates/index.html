@@ -1,34 +1,145 @@
 {% extends "layout.html" %}
 {% block title %}Home{% endblock %}
 {% block content %}
-<div class="jumbotron">
-    <h1 class="display-4">Greater London Authority Grants</h1>
-    <p class="lead">
-        This web application helps prospective GLA grant applicants assess their likelihood of success
-        concisely and simply, without submitting full applications.
-    </p>
-    <hr class="my-4">
-    <p>
-        The GLA (Greater London Authority) provides funding for various projects across London. This application
-        allows you to explore past grant data, visualize trends, and submit snippets of your application for feedback
-        before submitting your official grant application to the GLA.
-    </p>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Data Visualization</h5>
-                    <p class="card-text">Explore past grant trends to help make informed decisions.</p>
-                    <a href="{{ url_for('main.dash_visualization') }}" class="btn btn-primary">View Charts</a>
+<div class="hero-section">
+    <div class="row">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold">Welcome to GLA Grants</h1>
+            <p class="lead">
+                Your dashboard for exploring grant opportunities and tracking applications.
+            </p>
+            <p>
+                The Greater London Authority provides funding for various projects across London. 
+                Use our tools to explore past grant data, visualize trends, and submit your applications for feedback.
+            </p>
+        </div>
+        <div class="col-md-4 d-flex align-items-center justify-content-center">
+            <div class="text-center">
+                <i class="fas fa-chart-pie text-primary" style="font-size: 64px;"></i>
+                <p class="mt-2">Explore data-driven insights</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                        <i class="fas fa-chart-bar text-white" style="font-size: 24px;"></i>
+                    </div>
+                    <h4 class="card-title mb-0">Data Visualization</h4>
+                </div>
+                <p class="card-text flex-grow-1">Explore past grant trends using interactive charts and visualizations to help make informed decisions for your application.</p>
+                <div class="mt-auto">
+                    <a href="{{ url_for('main.dash_visualization') }}" class="btn btn-primary">
+                        <i class="fas fa-chart-line me-2"></i>View Charts
+                    </a>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title">Submit Application</h5>
-                    <p class="card-text">Submit a snippet of your application for expert feedback.</p>
-                    <a href="{{ url_for('main.submit_application') }}" class="btn btn-primary">Apply Now</a>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card h-100">
+            <div class="card-body d-flex flex-column">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="rounded-circle bg-success d-flex align-items-center justify-content-center me-3" style="width: 50px; height: 50px;">
+                        <i class="fas fa-file-alt text-white" style="font-size: 24px;"></i>
+                    </div>
+                    <h4 class="card-title mb-0">Submit Application</h4>
+                </div>
+                <p class="card-text flex-grow-1">Submit a snippet of your application for expert feedback before making your official grant application to the GLA.</p>
+                <div class="mt-auto">
+                    <a href="{{ url_for('main.submit_application') }}" class="btn btn-success">
+                        <i class="fas fa-paper-plane me-2"></i>Apply Now
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card bg-light">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <i class="fas fa-lightbulb me-2 text-warning"></i>Grant Tips
+                </h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start mt-3">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="min-width: 32px; height: 32px;">
+                                <i class="fas fa-bullseye text-white" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="fs-6 fw-bold">Be Clear & Specific</h5>
+                                <p class="text-muted small">Clearly define your project goals, timeline, and how you'll measure success.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start mt-3">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="min-width: 32px; height: 32px;">
+                                <i class="fas fa-pound-sign text-white" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="fs-6 fw-bold">Budget Accurately</h5>
+                                <p class="text-muted small">Provide detailed, realistic budgets with clear cost breakdowns.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="d-flex align-items-start mt-3">
+                            <div class="rounded-circle bg-primary d-flex align-items-center justify-content-center me-3" style="min-width: 32px; height: 32px;">
+                                <i class="fas fa-hands-helping text-white" style="font-size: 16px;"></i>
+                            </div>
+                            <div>
+                                <h5 class="fs-6 fw-bold">Demonstrate Impact</h5>
+                                <p class="text-muted small">Show how your project will benefit the community with specific outcomes.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    <i class="fas fa-calendar-alt me-2"></i>Upcoming Deadlines
+                </h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 mb-3">
+                            <h5 class="fw-bold">Community Projects Fund</h5>
+                            <p class="text-muted mb-2">Deadline: July 15, 2023</p>
+                            <span class="badge bg-warning">30 days remaining</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 mb-3">
+                            <h5 class="fw-bold">Culture & Heritage Grants</h5>
+                            <p class="text-muted mb-2">Deadline: August 1, 2023</p>
+                            <span class="badge bg-success">45 days remaining</span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="border rounded p-3 mb-3">
+                            <h5 class="fw-bold">Green Spaces Initiative</h5>
+                            <p class="text-muted mb-2">Deadline: August 30, 2023</p>
+                            <span class="badge bg-info">75 days remaining</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

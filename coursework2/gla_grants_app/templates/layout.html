@@ -4,12 +4,201 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GLA Grants - {% block title %}{% endblock %}</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/bootstrap.css') }}">
+    <!-- Bootstrap 5 CSS from CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom styles -->
+    <style>
+        /* Modern color scheme */
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --light-color: #ecf0f1;
+            --dark-color: #2c3e50;
+            --success-color: #2ecc71;
+            --warning-color: #f39c12;
+            --info-color: #3498db;
+            --danger-color: #e74c3c;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+            color: #333;
+        }
+
+        /* Navbar styling */
+        .navbar {
+            background-color: var(--primary-color) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 0.8rem 1rem;
+        }
+        
+        .navbar-brand {
+            font-weight: 700;
+            font-size: 1.5rem;
+        }
+        
+        .nav-link {
+            font-weight: 500;
+            margin: 0 0.2rem;
+            padding: 0.5rem 0.8rem !important;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+        
+        .nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Card styling */
+        .card {
+            border: none;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s, box-shadow 0.3s;
+            margin-bottom: 1.5rem;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            font-weight: 600;
+            padding: 1rem 1.5rem;
+        }
+        
+        .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Button styling */
+        .btn {
+            border-radius: 5px;
+            font-weight: 500;
+            padding: 0.5rem 1.2rem;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--secondary-color);
+            border-color: var(--secondary-color);
+        }
+        
+        .btn-primary:hover {
+            background-color: #2980b9;
+            border-color: #2980b9;
+        }
+        
+        .btn-success {
+            background-color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .btn-success:hover {
+            background-color: #27ae60;
+            border-color: #27ae60;
+        }
+
+        /* Form styling */
+        .form-control, .form-select {
+            border-radius: 5px;
+            border: 1px solid #e1e5e9;
+            padding: 0.75rem 1rem;
+            font-size: 0.95rem;
+        }
+        
+        .form-control:focus, .form-select:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+        }
+
+        /* Table styling */
+        .table {
+            border-collapse: separate;
+            border-spacing: 0;
+            width: 100%;
+        }
+        
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .table td, .table th {
+            padding: 1rem;
+            vertical-align: middle;
+        }
+        
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(0, 0, 0, 0.01);
+        }
+        
+        /* Jumbotron replacement for Bootstrap 5 */
+        .hero-section {
+            background-color: #fff;
+            border-radius: 8px;
+            padding: 3rem 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Badge styling */
+        .badge {
+            font-weight: 500;
+            padding: 0.5em 0.8em;
+            border-radius: 30px;
+        }
+        
+        /* Alert styling */
+        .alert {
+            border: none;
+            border-radius: 8px;
+            padding: 1rem 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Icon spacing */
+        .icon-spacing {
+            margin-right: 0.5rem;
+        }
+        
+        /* Footer styling */
+        .footer {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Make form inputs more modern */
+        input.form-control, textarea.form-control, select.form-select {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s;
+        }
+
+        input.form-control:focus, textarea.form-control:focus, select.form-select:focus {
+            background-color: #fff;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.landing') }}">GLA Grants</a>
+            <a class="navbar-brand" href="{{ url_for('main.landing') }}">
+                <i class="fas fa-city icon-spacing"></i>GLA Grants
+            </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
                     aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
@@ -18,17 +207,25 @@
                 <ul class="navbar-nav me-auto">
                     {% if session.get('user_id') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.index') }}">Home</a>
+                        <a class="nav-link" href="{{ url_for('main.index') }}">
+                            <i class="fas fa-home icon-spacing"></i>Home
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.dash_visualization') }}">Advanced Visualization</a>
+                        <a class="nav-link" href="{{ url_for('main.dash_visualization') }}">
+                            <i class="fas fa-chart-bar icon-spacing"></i>Advanced Visualization
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.submit_application') }}">Submit Application</a>
+                        <a class="nav-link" href="{{ url_for('main.submit_application') }}">
+                            <i class="fas fa-file-alt icon-spacing"></i>Submit Application
+                        </a>
                     </li>
                     {% if session.get('is_admin') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">Admin Dashboard</a>
+                        <a class="nav-link" href="{{ url_for('main.admin_dashboard') }}">
+                            <i class="fas fa-tachometer-alt icon-spacing"></i>Admin Dashboard
+                        </a>
                     </li>
                     {% endif %}
                     {% endif %}
@@ -36,17 +233,25 @@
                 <ul class="navbar-nav ms-auto">
                     {% if session.get('user_id') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.account') }}">My Account</a>
+                        <a class="nav-link" href="{{ url_for('main.account') }}">
+                            <i class="fas fa-user icon-spacing"></i>My Account
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.logout') }}">Logout</a>
+                        <a class="nav-link" href="{{ url_for('main.logout') }}">
+                            <i class="fas fa-sign-out-alt icon-spacing"></i>Logout
+                        </a>
                     </li>
                     {% else %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.login') }}">Login</a>
+                        <a class="nav-link" href="{{ url_for('main.login') }}">
+                            <i class="fas fa-sign-in-alt icon-spacing"></i>Login
+                        </a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('main.register') }}">Register</a>
+                        <a class="nav-link" href="{{ url_for('main.register') }}">
+                            <i class="fas fa-user-plus icon-spacing"></i>Register
+                        </a>
                     </li>
                     {% endif %}
                 </ul>
@@ -58,8 +263,18 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
+                    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                        {% if category == 'success' %}
+                            <i class="fas fa-check-circle icon-spacing"></i>
+                        {% elif category == 'danger' %}
+                            <i class="fas fa-exclamation-circle icon-spacing"></i>
+                        {% elif category == 'warning' %}
+                            <i class="fas fa-exclamation-triangle icon-spacing"></i>
+                        {% elif category == 'info' %}
+                            <i class="fas fa-info-circle icon-spacing"></i>
+                        {% endif %}
                         {{ message }}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 {% endfor %}
             {% endif %}
@@ -68,6 +283,43 @@
         {% block content %}{% endblock %}
     </div>
 
-    <script src="{{ url_for('static', filename='js/bootstrap.js') }}"></script>
+    <footer class="footer mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h5>Greater London Authority Grants</h5>
+                    <p>Helping Londoners access funding for community projects.</p>
+                </div>
+                <div class="col-md-3">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="{{ url_for('main.landing') }}" class="text-white">Home</a></li>
+                        {% if session.get('user_id') %}
+                        <li><a href="{{ url_for('main.dash_visualization') }}" class="text-white">Visualizations</a></li>
+                        <li><a href="{{ url_for('main.submit_application') }}" class="text-white">Apply</a></li>
+                        {% else %}
+                        <li><a href="{{ url_for('main.login') }}" class="text-white">Login</a></li>
+                        <li><a href="{{ url_for('main.register') }}" class="text-white">Register</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+                <div class="col-md-3">
+                    <h5>Contact</h5>
+                    <ul class="list-unstyled">
+                        <li><i class="fas fa-envelope icon-spacing"></i> grants@london.gov.uk</li>
+                        <li><i class="fas fa-phone icon-spacing"></i> +44 20 7983 4000</li>
+                        <li><i class="fas fa-map-marker-alt icon-spacing"></i> City Hall, London</li>
+                    </ul>
+                </div>
+            </div>
+            <hr class="bg-light">
+            <div class="text-center">
+                <p>&copy; {% now 'Y' %} Greater London Authority. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Bootstrap 5 JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

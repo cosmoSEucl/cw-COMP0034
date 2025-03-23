@@ -1,42 +1,160 @@
 {% extends "layout.html" %}
 {% block title %}Admin Dashboard{% endblock %}
 {% block content %}
-<h1>Admin Dashboard</h1>
-<p class="lead">Review and provide feedback on submitted grant applications.</p>
+<div class="hero-section">
+    <h1 class="display-5 fw-bold">
+        <i class="fas fa-tachometer-alt me-3 text-primary"></i>Admin Dashboard
+    </h1>
+    <p class="lead">Review and provide feedback on submitted grant applications.</p>
+</div>
 
-<div class="row">
+<div class="row mt-4">
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-primary h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-primary mb-2">
+                    <i class="fas fa-clipboard-list"></i>
+                </div>
+                <h5 class="card-title">Total Applications</h5>
+                <p class="card-text display-6">{{ applications|length }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-success h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-success mb-2">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h5 class="card-title">Reviewed</h5>
+                <p class="card-text display-6">{{ applications|selectattr('comment')|list|length }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-warning h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-warning mb-2">
+                    <i class="fas fa-hourglass-half"></i>
+                </div>
+                <h5 class="card-title">Pending Review</h5>
+                <p class="card-text display-6">{{ applications|rejectattr('comment')|list|length }}</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-3 col-md-6 mb-4">
+        <div class="card border-info h-100">
+            <div class="card-body text-center">
+                <div class="display-4 text-info mb-2">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h5 class="card-title">Today's Tasks</h5>
+                <p class="card-text display-6">{{ applications|rejectattr('comment')|list|length }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-2">
     <div class="col-md-12">
-        {% if applications %}
-            {% for application in applications %}
-                <div class="card mb-4">
-                    <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">{{ application.title }}</h5>
-                        <span class="badge bg-primary">{{ application.category }}</span>
-                    </div>
-                    <div class="card-body">
-                        <h6>Description:</h6>
-                        <p>{{ application.description }}</p>
-                        
-                        <h6>Question:</h6>
-                        <p>{{ application.question }}</p>
-                        
-                        <h6>Submitted on: {{ application.date_submitted }}</h6>
-                        
-                        <form method="POST" action="{{ url_for('main.admin_review', application_id=application.id) }}">
-                            <div class="mb-3">
-                                <label for="comment-{{ application.id }}" class="form-label">Feedback:</label>
-                                <textarea name="comment" id="comment-{{ application.id }}" class="form-control" rows="3">{{ application.comment or '' }}</textarea>
-                            </div>
-                            <button type="submit" class="btn btn-primary">Submit Feedback</button>
-                        </form>
+        <div class="card">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">
+                    <i class="fas fa-tasks me-2"></i>Application Review Queue
+                </h4>
+                <div>
+                    <span class="badge bg-light text-dark">
+                        <i class="fas fa-filter me-1"></i>Filter by:
+                    </span>
+                    <div class="btn-group ms-2">
+                        <button type="button" class="btn btn-sm btn-light active">All</button>
+                        <button type="button" class="btn btn-sm btn-light">Pending</button>
+                        <button type="button" class="btn btn-sm btn-light">Reviewed</button>
                     </div>
                 </div>
-            {% endfor %}
-        {% else %}
-            <div class="alert alert-info">
-                No applications have been submitted yet.
             </div>
-        {% endif %}
+            <div class="card-body p-0">
+                {% if applications %}
+                    <div class="accordion" id="applicationAccordion">
+                        {% for application in applications %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ application.id }}">
+                                    <button class="accordion-button {{ 'collapsed' if not loop.first }}" type="button" data-bs-toggle="collapse" data-bs-target="#collapse{{ application.id }}" aria-expanded="{{ 'true' if loop.first else 'false' }}" aria-controls="collapse{{ application.id }}">
+                                        <div class="d-flex align-items-center justify-content-between w-100">
+                                            <div>
+                                                <span class="fw-bold">{{ application.title }}</span>
+                                                <span class="text-muted ms-3">Submitted: {{ application.date_submitted }}</span>
+                                            </div>
+                                            <div>
+                                                <span class="badge {{ 'bg-success' if application.comment else 'bg-warning' }} me-2">
+                                                    {{ 'Reviewed' if application.comment else 'Pending' }}
+                                                </span>
+                                                <span class="badge bg-info text-dark">{{ application.category }}</span>
+                                            </div>
+                                        </div>
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ application.id }}" class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="heading{{ application.id }}" data-bs-parent="#applicationAccordion">
+                                    <div class="accordion-body">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="mb-3">
+                                                    <h5 class="fw-bold">
+                                                        <i class="fas fa-file-alt me-2 text-primary"></i>Description
+                                                    </h5>
+                                                    <div class="card">
+                                                        <div class="card-body bg-light">
+                                                            {{ application.description }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                
+                                                <div>
+                                                    <h5 class="fw-bold">
+                                                        <i class="fas fa-question-circle me-2 text-primary"></i>Question
+                                                    </h5>
+                                                    <div class="card">
+                                                        <div class="card-body bg-light">
+                                                            {{ application.question }}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            
+                                            <div class="col-md-6">
+                                                <h5 class="fw-bold">
+                                                    <i class="fas fa-comment-dots me-2 text-primary"></i>Feedback
+                                                </h5>
+                                                <form method="POST" action="{{ url_for('main.admin_review', application_id=application.id) }}">
+                                                    <div class="mb-3">
+                                                        <textarea name="comment" id="comment-{{ application.id }}" class="form-control" rows="8" placeholder="Provide detailed feedback for this application...">{{ application.comment or '' }}</textarea>
+                                                    </div>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <div class="form-text">
+                                                            <i class="fas fa-info-circle me-1"></i>Be specific and constructive in your feedback
+                                                        </div>
+                                                        <button type="submit" class="btn btn-primary">
+                                                            <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info m-3">
+                        <i class="fas fa-info-circle me-2"></i>No applications have been submitted yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

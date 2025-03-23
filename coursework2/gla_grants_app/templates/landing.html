@@ -1,32 +1,97 @@
 {% extends "layout.html" %}
 {% block title %}Welcome{% endblock %}
 {% block content %}
-<div class="jumbotron">
-    <h1 class="display-4">Greater London Authority Grants</h1>
-    <p class="lead">
-        This web application helps prospective GLA grant applicants assess their likelihood of success
-        concisely and simply, without submitting full applications.
-    </p>
-    <hr class="my-4">
-    <p>
-        The GLA (Greater London Authority) provides funding for various projects across London. This application
-        allows you to explore past grant data, visualize trends, and submit snippets of your application for feedback
-        before submitting your official grant application to the GLA.
-    </p>
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Already have an account?</h5>
-                    <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg">Sign In</a>
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-4 fw-bold">Greater London Authority Grants</h1>
+            <p class="lead">
+                This web application helps prospective GLA grant applicants assess their likelihood of success
+                concisely and simply, without submitting full applications.
+            </p>
+            <hr class="my-4">
+            <p class="mb-4">
+                The GLA provides funding for various projects across London. This application
+                allows you to explore past grant data, visualize trends, and submit snippets of your application for feedback
+                before submitting your official grant application to the GLA.
+            </p>
+            
+            <div class="mt-4 d-flex gap-2">
+                <a href="{{ url_for('main.login') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+                <a href="{{ url_for('main.register') }}" class="btn btn-success btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Register
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 bg-light">
+                <div class="card-body text-center p-5">
+                    <i class="fas fa-hand-holding-heart text-primary" style="font-size: 64px;"></i>
+                    <h3 class="mt-4">Supporting Communities</h3>
+                    <p class="text-muted">Helping Londoners bring their community projects to life.</p>
                 </div>
             </div>
         </div>
-        <div class="col-md-6">
-            <div class="card">
-                <div class="card-body text-center">
-                    <h5 class="card-title">New to GLA Grants?</h5>
-                    <a href="{{ url_for('main.register') }}" class="btn btn-success btn-lg">Create Account</a>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-12 text-center mb-4">
+        <h2>Why Use GLA Grants?</h2>
+        <p class="lead text-muted">Our platform provides everything you need for a successful grant application</p>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                    <i class="fas fa-chart-line text-primary" style="font-size: 32px;"></i>
+                </div>
+                <h4>Data Visualization</h4>
+                <p class="text-muted">Explore past grant trends and understand funding patterns to help make informed decisions.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                    <i class="fas fa-file-alt text-primary" style="font-size: 32px;"></i>
+                </div>
+                <h4>Submit Applications</h4>
+                <p class="text-muted">Submit a snippet of your application for expert feedback before making your official submission.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card h-100">
+            <div class="card-body text-center p-4">
+                <div class="rounded-circle bg-light d-flex align-items-center justify-content-center mx-auto mb-4" style="width: 80px; height: 80px;">
+                    <i class="fas fa-comments text-primary" style="font-size: 32px;"></i>
+                </div>
+                <h4>Expert Feedback</h4>
+                <p class="text-muted">Receive valuable feedback from grant specialists to improve your chances of success.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-5">
+    <div class="col-md-12">
+        <div class="card bg-light border-0">
+            <div class="card-body p-4">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h3>Ready to apply for funding?</h3>
+                        <p class="mb-md-0">Create an account or sign in to get started with your grant application.</p>
+                    </div>
+                    <div class="col-md-4 text-md-end">
+                        <a href="{{ url_for('main.register') }}" class="btn btn-primary">Get Started</a>
+                    </div>
                 </div>
             </div>
         </div>
