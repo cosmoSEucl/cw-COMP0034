@@ -70,9 +70,9 @@
                         <i class="fas fa-filter me-1"></i>Filter by:
                     </span>
                     <div class="btn-group ms-2">
-                        <button type="button" class="btn btn-sm btn-light active">All</button>
-                        <button type="button" class="btn btn-sm btn-light">Pending</button>
-                        <button type="button" class="btn btn-sm btn-light">Reviewed</button>
+                        <button type="button" class="btn btn-sm btn-light active" data-filter="all" onclick="filterApplications('all')">All</button>
+                        <button type="button" class="btn btn-sm btn-light" data-filter="pending" onclick="filterApplications('pending')">Pending</button>
+                        <button type="button" class="btn btn-sm btn-light" data-filter="reviewed" onclick="filterApplications('reviewed')">Reviewed</button>
                     </div>
                 </div>
             </div>
@@ -157,4 +157,61 @@
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    function filterApplications(filterType) {
+        // Update active button state
+        document.querySelectorAll('.btn-group button').forEach(button => {
+            if (button.getAttribute('data-filter') === filterType) {
+                button.classList.add('active');
+            } else {
+                button.classList.remove('active');
+            }
+        });
+        
+        // Get all accordion items
+        const accordionItems = document.querySelectorAll('.accordion-item');
+        
+        // Apply filter
+        accordionItems.forEach(item => {
+            const badge = item.querySelector('.badge');
+            const isPending = badge && badge.classList.contains('bg-warning');
+            
+            if (filterType === 'all') {
+                item.style.display = '';
+            } else if (filterType === 'pending') {
+                item.style.display = isPending ? '' : 'none';
+            } else if (filterType === 'reviewed') {
+                item.style.display = !isPending ? '' : 'none';
+            }
+        });
+        
+        // Handle empty state
+        const visibleItems = Array.from(accordionItems).filter(item => 
+            item.style.display !== 'none'
+        );
+        
+        const accordionElement = document.getElementById('applicationAccordion');
+        const emptyMessage = document.getElementById('empty-filter-message');
+        
+        if (visibleItems.length === 0) {
+            // No visible items - create empty message if it doesn't exist
+            if (!emptyMessage) {
+                const alertDiv = document.createElement('div');
+                alertDiv.id = 'empty-filter-message';
+                alertDiv.className = 'alert alert-info m-3';
+                alertDiv.innerHTML = `<i class="fas fa-info-circle me-2"></i>No ${filterType} applications found.`;
+                accordionElement.after(alertDiv);
+            } else {
+                emptyMessage.innerHTML = `<i class="fas fa-info-circle me-2"></i>No ${filterType} applications found.`;
+                emptyMessage.style.display = '';
+            }
+        } else if (emptyMessage) {
+            // Hide empty message if we have visible items
+            emptyMessage.style.display = 'none';
+        }
+    }
+</script>
 {% endblock %}

@@ -16,6 +16,9 @@ selenium==4.15.2
 setuptools==68.2.2
 setuptools-scm==8.0.4
 wordcloud==1.9.3
+beautifulsoup4==4.12.2
+requests==2.31.0
+
 
 # Testing and Development Tools
 flake8==6.1.0
