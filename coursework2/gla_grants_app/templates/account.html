@@ -7,7 +7,7 @@
             <h1 class="display-5 fw-bold">
                 <i class="fas fa-user-circle me-3 text-primary"></i>My Profile
             </h1>
-            <p class="lead">Manage your account settings and track your grant applications.</p>
+            <p class="lead">Manage your account settings{% if not session.get('is_admin') %} and track your grant applications{% endif %}.</p>
         </div>
     </div>
 </div>
@@ -80,6 +80,40 @@
     </div>
 
     <div class="col-md-7">
+        {% if session.get('is_admin') %}
+        <!-- Admin Profile Section -->
+        <div class="card">
+            <div class="card-header d-flex align-items-center">
+                <i class="fas fa-id-card me-2 text-primary"></i>
+                <h4 class="mb-0">Profile Information</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4 text-center">
+                        <img src="https://media.mkpcdn.com/prod/500x/c7f6de01913f4321df173a0f4e82b8ba_119773.jpg" 
+                             alt="Admin Profile" 
+                             class="img-thumbnail rounded-circle mb-3" 
+                             style="width: 150px; height: 150px; object-fit: cover;">
+                    </div>
+                    <div class="col-md-8">
+                        <div class="d-flex flex-column h-100 justify-content-center">
+                            <h3 class="mb-2">John</h3>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-briefcase me-2"></i>Grant Administrator
+                            </p>
+                            <p class="text-muted mb-2">
+                                <i class="fas fa-calendar-alt me-2"></i>Working since: 2016
+                            </p>
+                            <p class="text-muted mb-0">
+                                <i class="fas fa-star me-2"></i>Role: Managing grant applications
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <!-- Regular User Application Tracker -->
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <i class="fas fa-clipboard-list me-2 text-primary"></i>
@@ -158,6 +192,7 @@
                 </div>
             </div>
         </div>
+        {% endif %}
     </div>
 </div>
 {% endblock %}
