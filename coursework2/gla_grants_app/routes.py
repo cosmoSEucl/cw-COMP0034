@@ -93,30 +93,14 @@ def index():
     return render_template('index.html')
 
 # Add login required check to other routes
-@main.route('/data-visualization')
-def data_visualization():
-    """Data visualization page route"""
+@main.route('/dash-visualization')
+def dash_visualization():
+    """Route to redirect to the Dash app"""
     if 'user_id' not in session:
         flash('Please log in to access this page', 'warning')
         return redirect(url_for('main.login'))
         
-    # Query the database to get grant data
-    query = db.select(Grant.category, func.sum(Grant.amount_awarded).label('total_amount')).\
-        group_by(Grant.category)
-    result = db.session.execute(query).all()
-    
-    # Create dataframe for visualization
-    df = pd.DataFrame([(r.category, r.total_amount) for r in result], 
-                      columns=['Category', 'Total Amount'])
-    
-    # Create bar chart
-    fig = px.bar(df, x='Category', y='Total Amount', 
-                 title='Total Grant Amount by Category')
-    
-    # Convert chart to HTML
-    chart_html = fig.to_html(full_html=False)
-    
-    return render_template('data_visualization.html', chart_html=chart_html)
+    return render_template('dash_visualization.html')
 
 @main.route('/grants-dataset')
 def grants_dataset():

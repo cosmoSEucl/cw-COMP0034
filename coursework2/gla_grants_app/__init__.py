@@ -51,5 +51,9 @@ def create_app(test_config=None):
         # Import and setup data if database is empty
         from coursework2.gla_grants_app.helpers import setup_db_data
         setup_db_data()
+        
+        # Initialize Dash app
+        from coursework2.gla_grants_app.dash_app import init_dash
+        init_dash(app)
 
     return app

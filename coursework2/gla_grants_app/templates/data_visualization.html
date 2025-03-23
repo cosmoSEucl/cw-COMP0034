@@ -1,17 +1,21 @@
 {% extends "layout.html" %}
-{% block title %}Data Visualization{% endblock %}
+{% block title %}Advanced Data Visualization{% endblock %}
 {% block content %}
-<h1>Grant Data Visualization</h1>
-<p class="lead">Explore trends in GLA grant applications to help make informed decisions.</p>
+<h1>Advanced Data Visualization</h1>
+<p class="lead">Explore our comprehensive interactive dashboard for in-depth analysis of GLA grant data.</p>
 
 <div class="row">
     <div class="col-md-12">
         <div class="card mb-4">
             <div class="card-header">
-                Funding Distribution by Category
+                Interactive Dashboard
             </div>
             <div class="card-body">
-                {{ chart_html|safe }}
+                <p>
+                    Our advanced dashboard provides detailed visualizations and analysis tools for exploring the GLA grants dataset.
+                    You can interact with the data using various filters, view different chart types, and gain insights into grant distribution patterns.
+                </p>
+                <a href="/dash/" class="btn btn-primary">Launch Dashboard</a>
             </div>
         </div>
     </div>
@@ -19,10 +23,41 @@
 
 <div class="row">
     <div class="col-md-12">
-        <p>
-            These visualizations provide insights into historical grant patterns. Use this information to understand
-            where funding has been allocated and to help shape your grant application.
-        </p>
+        <div class="card mb-4">
+            <div class="card-header">
+                Features
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h5>Interactive Charts</h5>
+                        <p>Explore grant data through interactive pie charts, bar charts, and time series visualizations.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Word Cloud</h5>
+                        <p>Visualize common themes and keywords in grant titles and descriptions to identify trends.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Timeline Analysis</h5>
+                        <p>Track grant funding patterns over time with interactive timeline visualizations.</p>
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-md-4">
+                        <h5>Department Breakdown</h5>
+                        <p>Compare funding allocation across different GLA departments.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Searchable Dataset</h5>
+                        <p>Browse and search the complete grants dataset with powerful filtering tools.</p>
+                    </div>
+                    <div class="col-md-4">
+                        <h5>Top Grants Visualization</h5>
+                        <p>Identify the highest-value grants and their distribution across departments.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
