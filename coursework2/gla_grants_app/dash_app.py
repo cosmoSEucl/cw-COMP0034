@@ -581,13 +581,13 @@ def init_dash(server):
                 height=350
             )
             return fig
-            
+                
         # Ensure Award_Date is datetime type
         if not pd.api.types.is_datetime64_any_dtype(filtered_df['Award_Date']):
             filtered_df['Award_Date'] = pd.to_datetime(filtered_df['Award_Date'], errors='coerce')
             # Drop rows where date conversion failed
             filtered_df = filtered_df.dropna(subset=['Award_Date'])
-            
+                
         # Check if we still have data after cleaning
         if filtered_df.empty:
             fig = go.Figure()
@@ -615,30 +615,36 @@ def init_dash(server):
         max_date = filtered_df['Award_Date'].max()
         date_range = (max_date - min_date).days
         
-        if aggregation == 'YE' and date_range < 365:
+        if aggregation == 'Y' and date_range < 365:  # Changed from 'YE' to 'Y'
             # If less than a year of data, use quarterly
-            used_aggregation = 'QE'
-        elif aggregation == 'QE' and date_range < 90:
+            used_aggregation = 'Q'  # Changed from 'QE' to 'Q'
+        elif aggregation == 'Q' and date_range < 90:  # Changed from 'QE' to 'Q'
             # If less than 3 months, use monthly
-            used_aggregation = 'ME'
-        elif aggregation == 'ME' and date_range < 30:
+            used_aggregation = 'M'  # Changed from 'ME' to 'M'
+        elif aggregation == 'M' and date_range < 30:  # Changed from 'ME' to 'M'
             # If less than a month, use weekly
             used_aggregation = 'W'
         else:
             used_aggregation = aggregation
-            
-        # Group data by time period
-        time_data = filtered_df.groupby(
-            pd.Grouper(key='Award_Date', freq=used_aggregation),
-            observed=True
-        )['Amount_awarded'].sum().reset_index()
         
-        # Ensure we have data after grouping
-        if time_data.empty or time_data['Amount_awarded'].sum() == 0:
-            # If no data after grouping, try a different approach - directly use all points
+        try:    
+            # Group data by time period
+            time_data = filtered_df.groupby(
+                pd.Grouper(key='Award_Date', freq=used_aggregation),
+                observed=True
+            )['Amount_awarded'].sum().reset_index()
+            
+            # Ensure we have data after grouping
+            if time_data.empty or time_data['Amount_awarded'].sum() == 0:
+                # If no data after grouping, try a different approach - directly use all points
+                time_data = filtered_df[['Award_Date', 'Amount_awarded']].copy()
+                time_data = time_data.sort_values('Award_Date')
+        except Exception as e:
+            # If there's any error with the grouping, fall back to using the raw data
+            print(f"Error in timeline grouping: {e}")
             time_data = filtered_df[['Award_Date', 'Amount_awarded']].copy()
             time_data = time_data.sort_values('Award_Date')
-            
+                
         time_data.rename(columns={'Award_Date': 'Time'}, inplace=True)
 
         # Create the figure
@@ -659,9 +665,12 @@ def init_dash(server):
         y_padding = (y_max - y_min) * 0.1 if y_max > y_min else y_max * 0.1
 
         # Improve layout with better axis ranges
+        aggregation_labels = {'Y': 'Yearly', 'Q': 'Quarterly', 'M': 'Monthly', 'W': 'Weekly'}
+        display_agg = aggregation_labels.get(used_aggregation, used_aggregation)
+        
         fig.update_layout(
             title={
-                'text': f"Grant Amounts Over Time ({used_aggregation})",
+                'text': f"Grant Amounts Over Time ({display_agg})",
                 'y': 0.95,
                 'x': 0.5,
                 'xanchor': 'center',
