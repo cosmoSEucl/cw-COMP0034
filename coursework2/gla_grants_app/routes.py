@@ -7,7 +7,6 @@ from sqlalchemy import func
 import plotly.express as px
 import pandas as pd
 
-
 # Create blueprint
 main = Blueprint('main', __name__)
 
