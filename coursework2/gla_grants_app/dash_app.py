@@ -321,11 +321,11 @@ def init_dash(server):
                         dcc.Dropdown(
                             id='timeline-aggregation',
                             options=[
-                                {'label': 'Yearly', 'value': 'YE'},
-                                {'label': 'Quarterly', 'value': 'QE'},
-                                {'label': 'Monthly', 'value': 'ME'}
+                                {'label': 'Yearly', 'value': 'Y'},
+                                {'label': 'Quarterly', 'value': 'Q'},
+                                {'label': 'Monthly', 'value': 'M'}
                             ],
-                            value='YE',
+                            value='Y',
                             clearable=False,
                             className="mb-2"  # Reduced margin
                         ),
@@ -558,30 +558,133 @@ def init_dash(server):
         Update the timeline chart based on selected time aggregation.
         """
         filtered_df = filter_dataframe(df, None)
+        
+        # Check if DataFrame is empty or Award_Date column is missing
+        if filtered_df.empty or 'Award_Date' not in filtered_df.columns:
+            # Return an empty figure with a message
+            fig = go.Figure()
+            fig.update_layout(
+                annotations=[{
+                    'text': 'No data available for this time period',
+                    'showarrow': False,
+                    'font': {'size': 16},
+                    'xref': 'paper',
+                    'yref': 'paper',
+                    'x': 0.5,
+                    'y': 0.5
+                }],
+                xaxis=dict(title='Time'),
+                yaxis=dict(title='Total Amount Awarded (£)'),
+                template='plotly_white',
+                plot_bgcolor='rgba(0,0,0,0.02)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                height=350
+            )
+            return fig
+            
+        # Ensure Award_Date is datetime type
+        if not pd.api.types.is_datetime64_any_dtype(filtered_df['Award_Date']):
+            filtered_df['Award_Date'] = pd.to_datetime(filtered_df['Award_Date'], errors='coerce')
+            # Drop rows where date conversion failed
+            filtered_df = filtered_df.dropna(subset=['Award_Date'])
+            
+        # Check if we still have data after cleaning
+        if filtered_df.empty:
+            fig = go.Figure()
+            fig.update_layout(
+                annotations=[{
+                    'text': 'No valid date information available',
+                    'showarrow': False,
+                    'font': {'size': 16},
+                    'xref': 'paper',
+                    'yref': 'paper',
+                    'x': 0.5,
+                    'y': 0.5
+                }],
+                xaxis=dict(title='Time'),
+                yaxis=dict(title='Total Amount Awarded (£)'),
+                template='plotly_white',
+                plot_bgcolor='rgba(0,0,0,0.02)',
+                paper_bgcolor='rgba(0,0,0,0)',
+                height=350
+            )
+            return fig
+
+        # Adapt aggregation based on data range
+        min_date = filtered_df['Award_Date'].min()
+        max_date = filtered_df['Award_Date'].max()
+        date_range = (max_date - min_date).days
+        
+        if aggregation == 'YE' and date_range < 365:
+            # If less than a year of data, use quarterly
+            used_aggregation = 'QE'
+        elif aggregation == 'QE' and date_range < 90:
+            # If less than 3 months, use monthly
+            used_aggregation = 'ME'
+        elif aggregation == 'ME' and date_range < 30:
+            # If less than a month, use weekly
+            used_aggregation = 'W'
+        else:
+            used_aggregation = aggregation
+            
+        # Group data by time period
         time_data = filtered_df.groupby(
-            pd.Grouper(key='Award_Date', freq=aggregation),
+            pd.Grouper(key='Award_Date', freq=used_aggregation),
             observed=True
         )['Amount_awarded'].sum().reset_index()
+        
+        # Ensure we have data after grouping
+        if time_data.empty or time_data['Amount_awarded'].sum() == 0:
+            # If no data after grouping, try a different approach - directly use all points
+            time_data = filtered_df[['Award_Date', 'Amount_awarded']].copy()
+            time_data = time_data.sort_values('Award_Date')
+            
         time_data.rename(columns={'Award_Date': 'Time'}, inplace=True)
 
+        # Create the figure
         fig = go.Figure()
         fig.add_trace(go.Scatter(
             x=time_data['Time'],
             y=time_data['Amount_awarded'],
-            mode='lines',
+            mode='lines+markers',  # Add markers to see individual data points
             fill='tozeroy',
-            name='Total Amount Awarded'
+            name='Total Amount Awarded',
+            line=dict(width=3, color='#3498db'),  # Thicker line, specific color
+            marker=dict(size=6)  # Make markers more visible
         ))
 
+        # Calculate y-axis range with proper padding
+        y_max = time_data['Amount_awarded'].max() if not time_data.empty else 1
+        y_min = time_data['Amount_awarded'].min() if not time_data.empty else 0
+        y_padding = (y_max - y_min) * 0.1 if y_max > y_min else y_max * 0.1
+
+        # Improve layout with better axis ranges
         fig.update_layout(
-            xaxis_title='Time',
-            yaxis_title='Total Amount Awarded (£)',
+            title={
+                'text': f"Grant Amounts Over Time ({used_aggregation})",
+                'y': 0.95,
+                'x': 0.5,
+                'xanchor': 'center',
+                'yanchor': 'top'
+            },
+            xaxis=dict(
+                title='Time Period',
+                titlefont=dict(size=12),
+                showgrid=True,
+                gridcolor='rgba(0,0,0,0.1)'
+            ),
+            yaxis=dict(
+                title='Total Amount Awarded (£)',
+                titlefont=dict(size=12),
+                showgrid=True,
+                gridcolor='rgba(0,0,0,0.1)',
+                range=[max(0, y_min - y_padding), y_max + y_padding]
+            ),
             template='plotly_white',
             plot_bgcolor='rgba(0,0,0,0.02)',  # Very light gray for plot area
             paper_bgcolor='rgba(0,0,0,0)',    # Transparent paper background
-            xaxis_gridcolor='rgba(0,0,0,0.1)',
-            yaxis_gridcolor='rgba(0,0,0,0.1)',
-            margin=dict(l=20, r=20, t=10, b=20)  # More compact for iframe
+            margin=dict(l=20, r=20, t=40, b=20),  # More compact for iframe
+            height=350
         )
         return fig
     
