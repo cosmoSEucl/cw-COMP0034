@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, redirect, url_for, request, flash, session
 from werkzeug.security import generate_password_hash, check_password_hash
 from coursework2.gla_grants_app import db
-from coursework2.gla_grants_app.models import Grant, User, GrantApplication
+from coursework2.gla_grants_app.models import User, GrantApplication  # Removed Grant import
 from coursework2.gla_grants_app.forms import ApplicationForm, LoginForm, RegistrationForm, PasswordChangeForm
 from sqlalchemy import func
 import plotly.express as px

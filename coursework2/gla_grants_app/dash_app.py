@@ -42,44 +42,28 @@ def process_data():
     # Define the path to the Excel file
     current_dir = os.path.dirname(os.path.abspath(__file__))
     project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
-    excel_file_path = os.path.join(project_root, 'coursework1', 'data', 'cleaned_grants_data.xlsx')
     
-    # Check if the file exists
-    if not os.path.exists(excel_file_path):
-        # If not, look in alternative locations
-        alternative_paths = [
-            os.path.join(project_root, 'data', 'cleaned_grants_data.xlsx'),
-            os.path.join(current_dir, '..', 'data', 'cleaned_grants_data.xlsx'),
-            os.path.join(current_dir, 'data', 'cleaned_grants_data.xlsx')
-        ]
-        
-        for path in alternative_paths:
-            if os.path.exists(path):
-                excel_file_path = path
-                break
-        else:
-            # If file not found anywhere, use sample data
-            print("Excel file not found. Using sample data from the database instead.")
-            from coursework2.gla_grants_app import db
-            from coursework2.gla_grants_app.models import Grant
-            
-            grants = db.session.query(Grant).all()
-            data = pd.DataFrame([{
-                'Identifier': g.id,
-                'Title': g.title,
-                'Description_': g.description,
-                'Amount_awarded': g.amount_awarded,
-                'Award_Date': g.award_date,
-                'Funding_Org:Department': g.funding_org_department,
-                'Recipient_Org:Name': g.recipient_org_name,
-                'Duration_(Days)': 365  # Sample duration
-            } for g in grants])
-            
-            data['Award_Date'] = pd.to_datetime(data['Award_Date'])
-            data = data.sort_values(by='Award_Date')
-            return data
+    # Check several possible locations for the Excel file
+    possible_paths = [
+        os.path.join(project_root, 'coursework1', 'data', 'cleaned_grants_data.xlsx'),
+        os.path.join(project_root, 'data', 'cleaned_grants_data.xlsx'),
+        os.path.join(current_dir, '..', 'data', 'cleaned_grants_data.xlsx'),
+        os.path.join(current_dir, 'data', 'cleaned_grants_data.xlsx')
+    ]
+    
+    # Find the first path that exists
+    excel_file_path = next((path for path in possible_paths if os.path.exists(path)), None)
+    
+    if not excel_file_path:
+        print("Warning: Excel file not found in any expected location.")
+        # Create a minimal default DataFrame with proper columns if file is not found
+        return pd.DataFrame(columns=[
+            'Identifier', 'Title', 'Description_', 'Amount_awarded', 
+            'Award_Date', 'Funding_Org:Department', 'Recipient_Org:Name', 'Duration_(Days)'
+        ])
     
     # Load and process the data
+    print(f"Loading data from: {excel_file_path}")
     data = pd.read_excel(excel_file_path)
     data['Award_Date'] = pd.to_datetime(data['Award_Date'])
     data = data.sort_values(by='Award_Date')
