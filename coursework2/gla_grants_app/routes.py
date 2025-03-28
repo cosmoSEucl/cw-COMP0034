@@ -356,3 +356,26 @@ def news():
     
     return render_template('news.html', articles=all_articles, page_articles=page_articles,
                           current_page=page, total_pages=total_pages)
+
+@main.route('/reset-applications')
+def reset_applications():
+    """Admin route to reset only the grant applications - preserves user accounts"""
+    if 'user_id' not in session or not session.get('is_admin', False):
+        flash('You do not have permission to access this page', 'danger')
+        return redirect(url_for('main.index'))
+        
+    try:
+        # Import needed modules
+        from coursework2.gla_grants_app import db
+        from coursework2.gla_grants_app.models import GrantApplication
+        
+        # Delete only the grant applications
+        deleted_count = db.session.query(GrantApplication).delete()
+        db.session.commit()
+        
+        flash(f'Successfully reset applications database. Deleted {deleted_count} application(s).', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error resetting applications: {str(e)}', 'danger')
+    
+    return redirect(url_for('main.admin_dashboard'))

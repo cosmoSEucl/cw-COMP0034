@@ -3,22 +3,6 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from typing import List, Optional
 from coursework2.gla_grants_app import db
 
-class Grant(db.Model):
-    """Model representing GLA grant data"""
-    __tablename__ = 'grants'
-    
-    id: Mapped[int] = mapped_column(primary_key=True)
-    title: Mapped[str] = mapped_column(Text, nullable=False)
-    description: Mapped[str] = mapped_column(Text)
-    amount_awarded: Mapped[float] = mapped_column(Float)
-    funding_org_department: Mapped[str] = mapped_column(Text)
-    recipient_org_name: Mapped[str] = mapped_column(Text)
-    category: Mapped[str] = mapped_column(Text)
-    award_date: Mapped[str] = mapped_column(Text)
-    
-    # Relationship to application submissions
-    applications = relationship("GrantApplication", back_populates="grant")
-
 class User(db.Model):
     """Model representing users of the application"""
     __tablename__ = 'users'

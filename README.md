@@ -30,5 +30,5 @@ See GitHub repository [here](https://github.com/ucl-comp0035/comp0034-cw-cosmoSE
 
 
 Passwords for coursework 2:
-- Admin: username *admin* and password *admin123* 
+- Admin: username *admin1* and password *admin1234* 
 - User: username *user1* and password *user_password*
