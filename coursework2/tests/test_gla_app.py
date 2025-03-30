@@ -9,7 +9,7 @@ import uuid
 from werkzeug.security import generate_password_hash
 from coursework2.app import app as flask_app
 from coursework2.gla_grants_app import db
-from coursework2.gla_grants_app.models import User, Grant, GrantApplication
+from coursework2.gla_grants_app.models import User, GrantApplication
 
 # =========================================================
 # FIXTURES
