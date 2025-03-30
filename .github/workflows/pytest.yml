@@ -22,8 +22,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pytest pytest-cov
-        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-        pip install -e .
+        pip install -r requirements.txt
     
     - name: Download NLTK data
       run: |
@@ -31,10 +30,16 @@ jobs:
     
     - name: Run tests with pytest
       run: |
+        python -m pytest coursework2/tests/
+    
+    - name: Generate coverage report
+      run: |
         python -m pytest coursework2/tests/ --cov=coursework2 --cov-report=xml
+      if: success()
     
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
         file: ./coverage.xml
         fail_ci_if_error: false
+      if: success()
