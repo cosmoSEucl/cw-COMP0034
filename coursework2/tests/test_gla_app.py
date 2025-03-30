@@ -7,63 +7,85 @@ import os
 from datetime import datetime
 import uuid
 from werkzeug.security import generate_password_hash
-from coursework2.app import app as flask_app
-from coursework2.gla_grants_app import db
+from coursework2.gla_grants_app import create_app, db
 from coursework2.gla_grants_app.models import User, GrantApplication
 
 # =========================================================
 # FIXTURES
 # =========================================================
 
-@pytest.fixture()
+@pytest.fixture(scope="session")
 def app():
-    """
-    Use the actual Flask application instance for testing.
-    This is the same app that is run with app.py
-    """
-    # Configure the app for testing
-    flask_app.config.update({
+    """Create a Flask app instance for the entire test session."""
+    # Create app with test configuration
+    test_app = create_app({
         'TESTING': True,
-        'WTF_CSRF_ENABLED': False,  # Disable CSRF protection for testing
+        'WTF_CSRF_ENABLED': False,
+        'SQLALCHEMY_DATABASE_URI': 'sqlite:///:memory:',
     })
     
-    yield flask_app
+    # Create all tables in the in-memory database once for the whole session
+    with test_app.app_context():
+        db.create_all()
+        
+        # Add any baseline data all tests need here
+        # For example, create admin users or other required data
+    
+    yield test_app
+    
+    # Clean up after all tests
+    with test_app.app_context():
+        db.drop_all()
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
+def db_session(app):
+    """Create a fresh database session for a test.
+    
+    Uses transaction rollback to isolate tests without recreating the database.
+    """
+    with app.app_context():
+        # Connect to the database and begin a transaction
+        connection = db.engine.connect()
+        transaction = connection.begin()
+        
+        # Begin a nested transaction (savepoint)
+        nested = connection.begin_nested()
+        
+        # Configure Session to use the connection
+        session = db._make_scoped_session(
+            options={"bind": connection, "binds": {}}
+        )
+        
+        # Replace the global session with our test session
+        old_session = db.session
+        db.session = session
+        
+        yield session
+        
+        # Rollback the nested transaction
+        session.close()
+        nested.rollback()
+        transaction.rollback()
+        connection.close()
+        
+        # Restore the original session
+        db.session = old_session
+
+
+@pytest.fixture(scope="function")
 def client(app):
     """Create a test client for the app."""
     return app.test_client()
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def runner(app):
     """Create a test CLI runner for the app."""
     return app.test_cli_runner()
 
 
-@pytest.fixture()
-def db_session(app):
-    """
-    Create a database session for testing that will roll back changes.
-    This ensures tests don't permanently modify the database.
-    """
-    with app.app_context():
-        connection = db.engine.connect()
-        transaction = connection.begin()
-        
-        # Get session for testing
-        session = db.session
-        
-        yield session
-        
-        # Rollback transaction after test
-        session.close()
-        transaction.rollback()
-        connection.close()
-
-
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def logged_in_user(client, db_session):
     """Create a logged-in regular user for testing."""
     # Create a unique username for this test run to avoid conflicts
@@ -85,7 +107,7 @@ def logged_in_user(client, db_session):
     return test_user
 
 
-@pytest.fixture()
+@pytest.fixture(scope="function")
 def logged_in_admin(client, db_session):
     """Create a logged-in admin user for testing."""
     # Create a unique username for this test run to avoid conflicts
@@ -329,8 +351,8 @@ def test_admin_review(client, logged_in_admin, db_session):
     assert response.status_code == 200
     assert b'Feedback submitted successfully!' in response.data
     
-    # Verify application was updated
-    updated_application = db_session.query(GrantApplication).get(application_id)
+    # Verify application was updated - using newer SQLAlchemy API to avoid warnings
+    updated_application = db_session.get(GrantApplication, application_id)
     assert updated_application.comment == 'This is admin feedback on the application.'
 
 
@@ -353,7 +375,7 @@ def test_account_password_change(client, logged_in_user, db_session):
     THEN check that the password is updated
     """
     # Get the user's current password hash to verify it changes
-    user = db_session.query(User).get(logged_in_user.id)
+    user = db_session.get(User, logged_in_user.id)
     old_password_hash = user.password
     
     response = client.post(
@@ -369,8 +391,8 @@ def test_account_password_change(client, logged_in_user, db_session):
     assert response.status_code == 200
     assert b'Your password has been updated successfully!' in response.data
     
-    # Verify password was updated
-    user = db_session.query(User).get(logged_in_user.id)
+    # Verify password was updated - using newer SQLAlchemy API to avoid warnings
+    user = db_session.get(User, logged_in_user.id)
     assert user.password != old_password_hash
 
 
