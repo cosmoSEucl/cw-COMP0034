@@ -6,20 +6,9 @@ import pytest
 import os
 from datetime import datetime
 import uuid
-import warnings
 from werkzeug.security import generate_password_hash
-from sqlalchemy import exc as sa_exc
-from sqlalchemy.exc import SAWarning
 from coursework2.gla_grants_app import create_app, db
 from coursework2.gla_grants_app.models import User, GrantApplication
-
-# Filter common warnings to reduce noise during testing
-warnings.filterwarnings("ignore", category=SAWarning)
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-warnings.filterwarnings("ignore", category=sa_exc.SADeprecationWarning)
-warnings.filterwarnings("ignore", category=UserWarning)
-warnings.filterwarnings("ignore", module="pandas")
-warnings.filterwarnings("ignore", module="nltk")
 
 # =========================================================
 # FIXTURES
@@ -51,16 +40,13 @@ def app():
 
 @pytest.fixture(scope="function")
 def db_session(app):
-    """Create a fresh database session for a test.
-    
-    Uses simple transaction for SQLite compatibility.
-    """
+    """Create a fresh database session for a test."""
     with app.app_context():
-        # Connect to the database and begin a transaction
+        # Start a transaction
         connection = db.engine.connect()
         transaction = connection.begin()
         
-        # Configure Session to use the connection
+        # Create a session bound to the connection
         session = db.scoped_session(
             lambda: db.create_session(bind=connection)
         )
@@ -71,14 +57,13 @@ def db_session(app):
         
         yield session
         
-        # Rollback the transaction
+        # Rollback the transaction and close the connection
         session.close()
         transaction.rollback()
         connection.close()
         
         # Restore the original session
         db.session = old_session
-
 
 @pytest.fixture(scope="function")
 def client(app):
@@ -217,7 +202,7 @@ def test_register_functionality(client, db_session):
     assert b'Account created successfully! Please log in.' in response.data
     
     # Verify user was added to database
-    user = db_session.execute(db.select(User).filter_by(username=unique_username)).scalar_one_or_none()
+    user = db_session.query(User).filter_by(username=unique_username).first()
     assert user is not None
     assert user.is_admin is False
     
@@ -297,11 +282,10 @@ def test_submit_application(client, logged_in_user, db_session):
     assert b'Title' in response.data
     
     # Test POST request
-    test_title = f'Test Application {uuid.uuid4().hex[:8]}'
     response = client.post(
         '/submit-application',
         data={
-            'title': test_title,
+            'title': f'Test Application {uuid.uuid4().hex[:8]}',
             'description': 'This is a test application description.',
             'category': 'Community',
             'question': 'Test question for the application?'
@@ -313,9 +297,7 @@ def test_submit_application(client, logged_in_user, db_session):
     assert b'Your application has been submitted successfully!' in response.data
     
     # Verify application was added to database
-    application = db_session.execute(
-        db.select(GrantApplication).filter_by(title=test_title)
-    ).scalar_one_or_none()
+    application = db_session.query(GrantApplication).filter_by(description='This is a test application description.').first()
     assert application is not None
     assert application.description == 'This is a test application description.'
 
@@ -361,7 +343,7 @@ def test_admin_review(client, logged_in_admin, db_session):
     assert response.status_code == 200
     assert b'Feedback submitted successfully!' in response.data
     
-    # Verify application was updated
+    # Verify application was updated - using newer SQLAlchemy API to avoid warnings
     updated_application = db_session.get(GrantApplication, application_id)
     assert updated_application.comment == 'This is admin feedback on the application.'
 
@@ -401,7 +383,7 @@ def test_account_password_change(client, logged_in_user, db_session):
     assert response.status_code == 200
     assert b'Your password has been updated successfully!' in response.data
     
-    # Verify password was updated
+    # Verify password was updated - using newer SQLAlchemy API to avoid warnings
     user = db_session.get(User, logged_in_user.id)
     assert user.password != old_password_hash
 
