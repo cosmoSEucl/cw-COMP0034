@@ -196,7 +196,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.landing') }}">
+            <a class="navbar-brand" href="{% if session.get('user_id') %}{{ url_for('main.index') }}{% else %}{{ url_for('main.landing') }}{% endif %}">
                 <i class="fas fa-city icon-spacing"></i>GLA Grants
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
@@ -302,6 +302,7 @@
                         {% if session.get('user_id') %}
                         <li><a href="{{ url_for('main.dash_visualization') }}" class="text-white">Visualizations</a></li>
                         <li><a href="{{ url_for('main.submit_application') }}" class="text-white">Apply</a></li>
+                        <li><a href="{{ url_for('main.news') }}" class="text-white">Latest News</a></li>
                         {% else %}
                         <li><a href="{{ url_for('main.login') }}" class="text-white">Login</a></li>
                         <li><a href="{{ url_for('main.register') }}" class="text-white">Register</a></li>
@@ -311,7 +312,7 @@
             </div>
             <hr class="bg-light">
             <div class="text-center">
-                <p>&copy; Cosmo Coursework 2 COMP0034 not for commercial use</p>
+                <p>&copy; Coursework 2 COMP0034 Not For Commercial Use</p>
             </div>
         </div>
     </footer>
