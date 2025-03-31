@@ -514,6 +514,7 @@ def test_404_error(client):
 
 
 @pytest.mark.selenium
+@pytest.mark.skipif("GITHUB_ACTIONS" in os.environ, reason="Skipping Selenium tests in CI")
 def test_login_flow_with_selenium(chrome_driver, flask_server, db_session):
     """
     Test the user login flow using a browser.

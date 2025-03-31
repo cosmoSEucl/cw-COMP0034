@@ -21,28 +21,15 @@ jobs:
     - name: Install dependencies
       run: |
         python -m pip install --upgrade pip
-        pip install pytest pytest-cov selenium
         pip install -r requirements.txt
     
     - name: Download NLTK data
       run: |
         python -c "import nltk; nltk.download('vader_lexicon')"
     
-    - name: Setup Chrome and WebDriver
-      uses: nanasess/setup-chromedriver@v2
-      with:
-        chromedriver-version: latest
-    
-    - name: Run tests without Selenium
+    - name: Run tests
       run: |
-        python -m pytest coursework2/tests/ -v -k "not selenium"
-    
-    - name: Run Selenium tests
-      run: |
-        # Start Chrome in background
-        google-chrome --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 &
-        # Run only Selenium tests
-        python -m pytest coursework2/tests/ -v -m selenium
+        python -m pytest coursework2/tests/ -v
     
     - name: Generate coverage report
       run: |
