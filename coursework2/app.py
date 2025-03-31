@@ -1,3 +1,10 @@
+"""
+Main application entry point for the GLA Grants application.
+
+This module initializes and runs the Flask application by importing the 
+create_app function from the gla_grants_app package. It adds the parent 
+directory to the Python path to ensure proper module imports.
+"""
 import sys
 import os
 

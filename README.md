@@ -2,7 +2,6 @@
 
 ![Python Tests](https://github.com/cosmoSEucl/cw-COMP0034/actions/workflows/pytest.yml/badge.svg)
 
-
 This repository contains the practicals for the COMP0034 Coursework 1 and 2.
 
 ## Instructions for using this repository

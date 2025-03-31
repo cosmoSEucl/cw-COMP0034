@@ -1,58 +1,65 @@
+"""
+Initialization module for the GLA Grants application.
+
+This module sets up the Flask application, configures the SQLAlchemy database,
+and registers all the necessary components such as routes, models, and the Dash
+application. It creates a factory function for the Flask application that can
+be used for both development and testing environments.
+"""
 import os
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 import secrets
 
-# Create a SQLAlchemy declarative base
 class Base(DeclarativeBase):
+    """Base class for SQLAlchemy declarative models."""
     pass
 
-# Create the SQLAlchemy object
 db = SQLAlchemy(model_class=Base)
 
 def create_app(test_config=None):
-    # Create the Flask app
+    """
+    Create and configure the Flask application.
+    
+    Args:
+        test_config (dict, optional): Configuration dictionary for testing.
+            Defaults to None.
+    
+    Returns:
+        Flask: The configured Flask application.
+    """
     app = Flask(__name__, instance_relative_config=True)
     
-    # Configure the app
     app.config.from_mapping(
         SECRET_KEY=secrets.token_hex(16),
         SQLALCHEMY_DATABASE_URI="sqlite:///" + os.path.join(app.instance_path, 'gla_grants.sqlite'),
     )
 
     if test_config is None:
-        # Load the instance config, if it exists, when not testing
         app.config.from_pyfile('config.py', silent=True)
     else:
-        # Load the test config if passed in
         app.config.from_mapping(test_config)
 
-    # Ensure the instance folder exists
     try:
         os.makedirs(app.instance_path)
     except OSError:
         pass
 
-    # Initialize the database
     db.init_app(app)
 
     app.config['SESSION_TYPE'] = 'filesystem'
     app.config['SESSION_PERMANENT'] = False
     
     with app.app_context():
-        # Import and register the blueprint
         from coursework2.gla_grants_app.routes import main
         app.register_blueprint(main)
         
-        # Create database tables
         db.create_all()
         
-        # Import and setup data if database is empty
         from coursework2.gla_grants_app.helpers import setup_db_data
         setup_db_data()
         
-        # Initialize Dash app
         from coursework2.gla_grants_app.dash_app import init_dash
         init_dash(app)
 

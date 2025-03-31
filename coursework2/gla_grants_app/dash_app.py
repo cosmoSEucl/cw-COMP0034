@@ -1,3 +1,10 @@
+"""
+Dash application module for the GLA Grants application.
+
+This module defines a Dash application that provides interactive visualization
+of GLA grants data. It includes functions for processing data, generating
+visualizations, and setting up callbacks for interactivity.
+"""
 import os
 from dash import Dash, html, dcc, Input, Output, dash_table
 import dash_bootstrap_components as dbc

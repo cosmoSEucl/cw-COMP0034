@@ -1,15 +1,22 @@
+"""
+Forms module for the GLA Grants application.
+
+This module defines the WTForms classes used for user input validation and
+handling in the GLA Grants application, including login, registration,
+password change, and grant application forms.
+"""
 from flask_wtf import FlaskForm
 from wtforms import StringField, TextAreaField, SelectField, PasswordField, SubmitField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
 
 class LoginForm(FlaskForm):
-    """Form for user login"""
+    """Form for user login."""
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[DataRequired()])
     submit = SubmitField('Login')
 
 class RegistrationForm(FlaskForm):
-    """Form for user registration"""
+    """Form for user registration."""
     username = StringField('Username', validators=[DataRequired(), Length(min=4, max=50)])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm Password', 
@@ -17,7 +24,7 @@ class RegistrationForm(FlaskForm):
     submit = SubmitField('Register')
 
 class PasswordChangeForm(FlaskForm):
-    """Form for changing user password"""
+    """Form for changing user password."""
     old_password = PasswordField('Old Password', validators=[DataRequired()])
     new_password = PasswordField('New Password', validators=[DataRequired(), Length(min=6)])
     confirm_password = PasswordField('Confirm New Password', 
@@ -25,7 +32,7 @@ class PasswordChangeForm(FlaskForm):
     submit = SubmitField('Change Password')
 
 class ApplicationForm(FlaskForm):
-    """Form for submitting grant applications"""
+    """Form for submitting grant applications."""
     title = StringField('Title', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Description (max 500 words)', validators=[DataRequired(), Length(max=5000)])
     category = SelectField('Category', validators=[DataRequired()], 
