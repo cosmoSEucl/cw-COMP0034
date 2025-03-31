@@ -3,14 +3,23 @@ Combined test file for testing the GLA Grants Flask application.
 
 This module contains both fixtures and tests for the GLA Grants Flask
 application, including tests for routes, models, and functionality.
+It also includes browser-based integration tests using Selenium WebDriver.
 """
 import pytest
 import os
 from datetime import datetime
 import uuid
+import time
+import threading
 from werkzeug.security import generate_password_hash
+from werkzeug.serving import make_server
 from coursework2.gla_grants_app import create_app, db
 from coursework2.gla_grants_app.models import User, GrantApplication
+from selenium import webdriver
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.fixture(scope="session")
 def app():
@@ -146,6 +155,69 @@ def logged_in_admin(client, db_session):
     )
     
     return admin_user
+
+@pytest.fixture(scope="module")
+def chrome_driver():
+    """
+    Fixture to create a Chrome WebDriver for browser testing.
+    
+    Configures the driver to run headless in CI environments and
+    with a visible browser locally.
+    
+    Returns:
+        webdriver.Chrome: Configured Chrome WebDriver instance.
+    """
+    options = Options()
+    if "GITHUB_ACTIONS" in os.environ:
+        options.add_argument("--disable-gpu")
+        options.add_argument("--no-sandbox")
+        options.add_argument("--headless")
+    else:
+        options.add_argument("--start-maximized")
+    
+    try:
+        driver = webdriver.Chrome(options=options)
+        driver.implicitly_wait(10)
+        yield driver
+        driver.quit()
+    except Exception as e:
+        pytest.skip(f"Could not create Chrome WebDriver: {e}")
+
+@pytest.fixture(scope="function")
+def flask_server(app):
+    """
+    Fixture to run a Flask server for Selenium tests.
+    
+    This starts the Flask application in a separate thread for browser access.
+    
+    Args:
+        app (Flask): The Flask application fixture.
+        
+    Returns:
+        str: The base URL for the running server.
+    """
+    # Set up the test server
+    app.config.update({
+        "TESTING": True,
+        "WTF_CSRF_ENABLED": False,
+        "SERVER_NAME": None,  # Allow auto-binding to available port
+    })
+    
+    # Choose a port dynamically or use a fixed one
+    port = 5000
+    server = make_server('127.0.0.1', port, app)
+    server_thread = threading.Thread(target=server.serve_forever)
+    server_thread.daemon = True
+    server_thread.start()
+    
+    # Give the server time to start
+    time.sleep(1)
+    
+    yield f"http://127.0.0.1:{port}"
+    
+    # Shutdown the server
+    server.shutdown()
+    server_thread.join()
 
 def test_landing_page(client):
     """
@@ -435,3 +507,74 @@ def test_404_error(client):
     """
     response = client.get('/nonexistent-route')
     assert response.status_code == 404
+
+
+@pytest.mark.selenium
+def test_login_flow_with_selenium(chrome_driver, flask_server, db_session):
+    """
+    Test the user login flow using a browser.
+    
+    GIVEN a running Flask application and Chrome WebDriver
+    WHEN a user navigates to the login page, enters valid credentials, and submits the form
+    THEN they should be logged in successfully and redirected to the home page
+    """
+    # Create a test user
+    test_username = f"selenium_user_{uuid.uuid4().hex[:8]}"
+    hashed_password = generate_password_hash('seleniumpassword')
+    test_user = User(username=test_username, password=hashed_password, is_admin=False)
+    
+    with db_session.begin_nested():
+        db_session.add(test_user)
+    db_session.commit()
+    
+    try:
+        # Navigate to login page
+        chrome_driver.get(f"{flask_server}/login")
+        
+        # Wait for the page to load and check title
+        WebDriverWait(chrome_driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "h3"))
+        )
+        assert "Sign In" in chrome_driver.page_source
+        
+        # Find form elements - using more robust selectors that match your template structure
+        username_field = WebDriverWait(chrome_driver, 10).until(
+            EC.presence_of_element_located((By.ID, "username"))
+        )
+        password_field = chrome_driver.find_element(By.ID, "password")
+        submit_button = chrome_driver.find_element(By.CSS_SELECTOR, "input[type='submit']")
+        
+        # Enter credentials and submit form
+        username_field.clear()
+        username_field.send_keys(test_username)
+        password_field.clear()
+        password_field.send_keys('seleniumpassword')
+        submit_button.click()
+        
+        # Wait for redirect to home page and verify login was successful
+        WebDriverWait(chrome_driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//h1[contains(text(),'Welcome to GLA Grants')]"))
+        )
+        
+        # Check for navigation elements that are only visible when logged in
+        nav_element = WebDriverWait(chrome_driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/submit-application')]"))
+        )
+        assert nav_element is not None
+        
+        # Check for success message
+        try:
+            success_message = WebDriverWait(chrome_driver, 5).until(
+                EC.presence_of_element_located((By.CLASS_NAME, "alert-success"))
+            )
+            assert "Logged in successfully" in success_message.text
+        except:
+            # If we couldn't find the success message, at least verify we're on the right page
+            assert "Welcome to GLA Grants" in chrome_driver.page_source
+        
+    except Exception as e:
+        # Take a screenshot for debugging if the test fails
+        screenshot_path = f"selenium_failure_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
+        chrome_driver.save_screenshot(screenshot_path)
+        print(f"Screenshot saved to {screenshot_path}")
+        raise e

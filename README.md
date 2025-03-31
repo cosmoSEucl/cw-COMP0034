@@ -35,21 +35,24 @@ See GitHub repository [here](https://github.com/ucl-comp0035/comp0034-cw-cosmoSE
 Before running the code, create a Python virtual environment and download the required libraries using `pip install -r requirements.txt` and `pip install -e .`. The `pip install -e .` command installs the project in editable mode, allowing changes to the code to be immediately reflected without reinstallation.
 
 1. Test User Credentials
-- Admin: Username: admin1, Password: admin1234
-- Regular User: Username: user3, Password: hello_user
+    - Admin: Username: admin1, Password: admin1234
+    - Regular User: Username: user2, Password: user1234
 
 2. Running the Application: Navigate to the project root and run `python coursework2/app.py`
 
 3. Running tests: Tests should be ran from the `tests` directory (or see CI in Github actions) so first `cd "/Users/comecosmolabautiere/Desktop/Year 3/Modules /Term 2/Software Engineering II/Coursework/comp0034-cw-cosmoSEucl/coursework2/tests"` then run `python -m pytest` or `python -m pytest --cov` to get coverage
 
 4. Project Structure
-- `coursework2/`: Primary project directory
-    - `gla_grants_app/`: Main application package
-        - Contains core application logic, database models, routes, and templates
-        - Implements the Flask web application for GLA grant management
-    - `tests/`: Comprehensive test suite
-        - Includes unit and integration tests for all application components
-        - Ensures application functionality and reliability
-    - `app.py`: Entry point for running the Flask application
-    - `__init__.py`: Package initialization and configuration
+    - `coursework2/`: Primary project directory
+        - `gla_grants_app/`: Main application package
+            - Contains core application logic, database models, routes, and templates
+            - Implements the Flask web application for GLA grant management
+        - `tests/`: Comprehensive test suite
+            - Includes unit and integration tests for all application components
+            - Ensures application functionality and reliability
+        - `app.py`: Entry point for running the Flask application
+        - `__init__.py`: Package initialization and configuration
+
+See GitHub repository [here](https://github.com/ucl-comp0035/comp0034-cw-cosmoSEucl.git). 
+
 
