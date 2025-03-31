@@ -168,10 +168,13 @@ def chrome_driver():
         webdriver.Chrome: Configured Chrome WebDriver instance.
     """
     options = Options()
+    
+    # Set headless mode for CI or when running tests non-interactively
     if "GITHUB_ACTIONS" in os.environ:
+        options.add_argument("--headless")
         options.add_argument("--disable-gpu")
         options.add_argument("--no-sandbox")
-        options.add_argument("--headless")
+        options.add_argument("--disable-dev-shm-usage")
     else:
         options.add_argument("--start-maximized")
     
@@ -181,7 +184,8 @@ def chrome_driver():
         yield driver
         driver.quit()
     except Exception as e:
-        pytest.skip(f"Could not create Chrome WebDriver: {e}")
+        print(f"Could not create Chrome WebDriver: {e}")
+        yield None
 
 @pytest.fixture(scope="function")
 def flask_server(app):

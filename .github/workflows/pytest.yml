@@ -28,21 +28,21 @@ jobs:
       run: |
         python -c "import nltk; nltk.download('vader_lexicon')"
     
-    - name: Set up Chrome
-      uses: browser-actions/setup-chrome@latest
+    - name: Setup Chrome and WebDriver
+      uses: nanasess/setup-chromedriver@v2
+      with:
+        chromedriver-version: latest
     
-    - name: Install ChromeDriver
+    - name: Run tests without Selenium
       run: |
-        CHROME_VERSION=$(google-chrome --version | awk '{print $3}' | cut -d. -f1)
-        CHROMEDRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-        curl -L -o chromedriver.zip "https://chromedriver.storage.googleapis.com/$CHROMEDRIVER_VERSION/chromedriver_linux64.zip"
-        unzip chromedriver.zip
-        chmod +x chromedriver
-        sudo mv chromedriver /usr/local/bin/
+        python -m pytest coursework2/tests/ -v -k "not selenium"
     
-    - name: Run tests with pytest
+    - name: Run Selenium tests
       run: |
-        python -m pytest coursework2/tests/ -v
+        # Start Chrome in background
+        google-chrome --headless --disable-gpu --no-sandbox --remote-debugging-port=9222 &
+        # Run only Selenium tests
+        python -m pytest coursework2/tests/ -v -m selenium
     
     - name: Generate coverage report
       run: |
