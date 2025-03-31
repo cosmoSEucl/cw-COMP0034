@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block title %}Server Error{% endblock %}
+{% block content %}
+<div class="hero-section">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-1 fw-bold text-danger">500</h1>
+            <h2 class="mb-4">Server Error</h2>
+            <p class="lead mb-4">
+                Something went wrong on our servers. We're aware of the issue and working to fix it.
+            </p>
+            <div class="mt-4">
+                <a href="{{ url_for('main.landing') }}" class="btn btn-primary">
+                    <i class="fas fa-home me-2"></i>Return to Home
+                </a>
+            </div>
+        </div>
+        <div class="col-md-4 text-center">
+            <i class="fas fa-exclamation-triangle text-warning" style="font-size: 120px;"></i>
+        </div>
+    </div>
+</div>
+{% endblock %}

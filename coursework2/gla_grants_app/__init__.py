@@ -7,7 +7,7 @@ application. It creates a factory function for the Flask application that can
 be used for both development and testing environments.
 """
 import os
-from flask import Flask
+from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.orm import DeclarativeBase
 import secrets
@@ -54,6 +54,14 @@ def create_app(test_config=None):
     with app.app_context():
         from coursework2.gla_grants_app.routes import main
         app.register_blueprint(main)
+
+        @app.errorhandler(404)
+        def page_not_found(e):
+            return render_template('errors/404.html'), 404
+            
+        @app.errorhandler(500)
+        def internal_server_error(e):
+            return render_template('errors/500.html'), 500
         
         db.create_all()
         

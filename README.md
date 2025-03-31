@@ -40,7 +40,8 @@ Before running the code, create a Python virtual environment and download the re
 
 2. Running the Application: Navigate to the project root and run `python coursework2/app.py`
 
-3. Running tests: Tests should be ran from the `tests` directory (or see CI in Github actions) so first `cd "/Users/comecosmolabautiere/Desktop/Year 3/Modules /Term 2/Software Engineering II/Coursework/comp0034-cw-cosmoSEucl/coursework2/tests"` then run `python -m pytest` or `python -m pytest --cov` to get coverage
+3. Running tests: Tests should be ran from the `tests` directory (or see CI in Github actions) so first `cd "/Users/comecosmolabautiere/Desktop/Year 3/Modules /Term 2/Software Engineering II/Coursework/comp0034-cw-cosmoSEucl/coursework2/tests"` then run `python -m pytest` or `python -m pytest --cov` to get coverage. Note: The Selenium tests are configured to run locally but are skipped in CI environments due to setup complexity.
+   
 
 4. Project Structure
     - `coursework2/`: Primary project directory

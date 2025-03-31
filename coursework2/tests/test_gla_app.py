@@ -549,36 +549,30 @@ def test_login_flow_with_selenium(chrome_driver, flask_server, db_session):
         password_field = chrome_driver.find_element(By.ID, "password")
         submit_button = chrome_driver.find_element(By.CSS_SELECTOR, "input[type='submit']")
         
-        # Enter credentials and submit form
         username_field.clear()
         username_field.send_keys(test_username)
         password_field.clear()
         password_field.send_keys('seleniumpassword')
         submit_button.click()
         
-        # Wait for redirect to home page and verify login was successful
         WebDriverWait(chrome_driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//h1[contains(text(),'Welcome to GLA Grants')]"))
         )
         
-        # Check for navigation elements that are only visible when logged in
         nav_element = WebDriverWait(chrome_driver, 10).until(
             EC.presence_of_element_located((By.XPATH, "//a[contains(@href, '/submit-application')]"))
         )
         assert nav_element is not None
         
-        # Check for success message
         try:
             success_message = WebDriverWait(chrome_driver, 5).until(
                 EC.presence_of_element_located((By.CLASS_NAME, "alert-success"))
             )
             assert "Logged in successfully" in success_message.text
         except:
-            # If we couldn't find the success message, at least verify we're on the right page
             assert "Welcome to GLA Grants" in chrome_driver.page_source
         
     except Exception as e:
-        # Take a screenshot for debugging if the test fails
         screenshot_path = f"selenium_failure_{datetime.now().strftime('%Y%m%d_%H%M%S')}.png"
         chrome_driver.save_screenshot(screenshot_path)
         print(f"Screenshot saved to {screenshot_path}")
